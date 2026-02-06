@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "aws-api-mcp-server": {
+      "command": "uvx",
+      "args": ["awslabs.aws-api-mcp-server@latest"],
+      "env": {
+        "AWS_REGION": "us-west-2"
+      },
+      "autoApprove": [
+        "suggest_aws_commands"
+      ]
+    },
+    "aws-knowledge-mcp-server": {
+      "url": "https://knowledge-mcp.global.api.aws",
+      "type": "http",
+      "autoApprove": [
+        "aws___search_documentation",
+        "aws___read_documentation",
+        "aws___recommend",
+        "aws___list_regions",
+        "aws___get_regional_availability"
+      ]
+    }
+  }
+}

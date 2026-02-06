@@ -1,0 +1,1 @@
+${<entry>_CONTENT}
