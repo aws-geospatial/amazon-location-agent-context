@@ -74,15 +74,15 @@ echo "## Checking output directories..."
 echo ""
 check_directory "context" 1
 check_directory "context/additional" 1
-check_directory "kiro" 1
-check_directory "kiro/steering" 1
+check_directory "kiro-powers/amazon-location" 1
+check_directory "kiro-powers/amazon-location/steering" 1
 echo ""
 
 echo "## Checking required files..."
 echo ""
 check_file "context/amazon-location.md"
-check_file "kiro/POWER.md"
-check_file "kiro/mcp.json"
+check_file "kiro-powers/amazon-location/POWER.md"
+check_file "kiro-powers/amazon-location/mcp.json"
 echo ""
 
 echo "## Checking for unexpanded template variables..."
@@ -92,7 +92,7 @@ while IFS= read -r file; do
     if ! check_no_template_vars "$file"; then
         template_errors=$((template_errors + 1))
     fi
-done < <(find context kiro -type f \( -name "*.md" -o -name "*.json" \) 2>/dev/null)
+done < <(find context kiro-powers -type f \( -name "*.md" -o -name "*.json" \) 2>/dev/null)
 
 if [ "$template_errors" -eq 0 ]; then
     echo "✓ PASS: No unexpanded template variables found"
@@ -127,7 +127,7 @@ check_directory_size() {
 }
 
 check_directory_size "context"
-check_directory_size "kiro"
+check_directory_size "kiro-powers/amazon-location"
 echo ""
 
 echo "=== Verification Complete ==="

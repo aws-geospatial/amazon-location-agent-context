@@ -6,13 +6,14 @@ This document covers the build system, content structure, and how to contribute 
 
 ```
 /
-├── kiro/                        # Kiro Power (generated output)
-│   ├── POWER.md
-│   ├── mcp.json
-│   └── steering/
-│       ├── address-input.md
-│       ├── address-verification.md
-│       └── ...
+├── kiro-powers/                 # Kiro Power (generated output)
+│   └── amazon-location/
+│       ├── POWER.md
+│       ├── mcp.json
+│       └── steering/
+│           ├── address-input.md
+│           ├── address-verification.md
+│           └── ...
 │
 ├── context/                     # Direct context (generated output)
 │   ├── amazon-location.md
@@ -67,7 +68,7 @@ The build system uses shell variable expansion to generate projections from sour
 
 # Build specific projection
 ./src/scripts/build-base.sh    # Generates context/
-./src/scripts/build-kiro.sh    # Generates kiro/
+./src/scripts/build-kiro.sh    # Generates kiro-powers/amazon-location/
 ```
 
 ### Build Process
@@ -81,7 +82,7 @@ The build system uses shell variable expansion to generate projections from sour
 Output:
 
 - `context/` - Base context projection
-- `kiro/` - Kiro Power projection
+- `kiro-powers/amazon-location/` - Kiro Power projection
 
 Files in output directories should never be edited manually—they are overwritten on each build.
 
@@ -151,7 +152,7 @@ The build automatically generates:
 
 - `context/additional/my-feature/BRIEF.md`
 - `context/additional/my-feature/AGENTS.md`
-- `kiro/steering/my-feature.md`
+- `kiro-powers/amazon-location/steering/my-feature.md`
 
 ### Add New Projection Type
 
@@ -169,3 +170,13 @@ After building, the script reports context sizes:
 ```
 
 This helps ensure context stays minimal and effective.
+
+## Local Testing with Kiro
+
+To test the power locally while developing:
+
+1. Run the build: `./src/scripts/build.sh`
+2. In Kiro IDE, go to Powers panel → Add Custom Power → Import power from a folder
+3. Select the `kiro-powers/amazon-location/` directory from your local checkout
+
+This lets you iterate on content changes and immediately test them in Kiro without publishing.

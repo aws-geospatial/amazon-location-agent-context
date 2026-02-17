@@ -47,7 +47,7 @@ evaluate_output() {
 }
 
 # Evaluate all outputs
-evaluate_output "kiro" "kiro"
+evaluate_output "kiro-powers/amazon-location" "kiro-powers/amazon-location"
 evaluate_output "context" "context"
 
 echo "=== Evaluation Complete ==="

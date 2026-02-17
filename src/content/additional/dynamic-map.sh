@@ -38,7 +38,8 @@ const map = new maplibregl.Map({
     container: 'map',
     style: styleUrl,
     center: [-122.4194, 37.7749],
-    zoom: 10
+    zoom: 10,
+    validateStyle: false, // Disable style validation for faster map load
 });
 ```
 
