@@ -18,8 +18,8 @@ for file in src/content/additional/*.sh; do
 done
 
 # Clean and create output directories
-rm -rf kiro
-mkdir -p kiro/steering
+rm -rf kiro-powers
+mkdir -p kiro-powers/amazon-location/steering
 
 # Generate steering file list
 STEERING_FILES_LIST=""
@@ -36,7 +36,7 @@ export STEERING_FILES_LIST
 # Expand core templates
 for template in src/templates/kiro/*.md; do
     [ -f "$template" ] || continue
-    output="kiro/$(basename "$template")"
+    output="kiro-powers/amazon-location/$(basename "$template")"
     eval "cat <<TEMPLATE_EOF
 $(cat "$template")
 TEMPLATE_EOF
@@ -46,8 +46,8 @@ done
 
 # Copy static files
 if [ -f "src/templates/kiro/mcp.json" ]; then
-    cp "src/templates/kiro/mcp.json" "kiro/mcp.json"
-    echo "  Copied: kiro/mcp.json"
+    cp "src/templates/kiro/mcp.json" "kiro-powers/amazon-location/mcp.json"
+    echo "  Copied: kiro-powers/amazon-location/mcp.json"
 fi
 
 # Expand additional entry templates (steering files)
@@ -59,7 +59,7 @@ if [ -f "$template" ]; then
         entry_name=$(basename "$entry_file" .sh)
         entry_var=$(echo "$entry_name" | tr '[:lower:]-' '[:upper:]_')
         
-        output="kiro/steering/$entry_name.md"
+        output="kiro-powers/amazon-location/steering/$entry_name.md"
         
         # Replace <entry> placeholder with actual variable prefix, then expand
         eval "cat <<TEMPLATE_EOF

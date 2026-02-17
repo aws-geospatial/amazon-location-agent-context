@@ -13,8 +13,8 @@ This package helps AI coding assistants understand Amazon Location Service APIs,
 Install as a Power:
 
 1. Open Kiro IDE
-2. Go to Powers panel → Add power from Local Path
-3. Select the `kiro/` directory
+2. Go to Powers panel → Add Custom Power → Import power from GitHub
+3. Enter: `https://github.com/aws-geospatial/amazon-location-agent-context/tree/main/kiro-powers/amazon-location`
 
 Activate by keywords: Mention "location", "maps", "geocoding", "routing", "places", "geofencing", or "tracking" in your prompts.
 
