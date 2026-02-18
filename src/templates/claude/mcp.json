@@ -1,0 +1,13 @@
+{
+  "aws-api-mcp-server": {
+    "command": "uvx",
+    "args": ["awslabs.aws-api-mcp-server@latest"],
+    "env": {
+      "AWS_REGION": "us-west-2"
+    }
+  },
+  "aws-knowledge-mcp-server": {
+    "type": "http",
+    "url": "https://knowledge-mcp.global.api.aws"
+  }
+}

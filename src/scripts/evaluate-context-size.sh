@@ -48,6 +48,7 @@ evaluate_output() {
 
 # Evaluate all outputs
 evaluate_output "kiro-powers/amazon-location" "kiro-powers/amazon-location"
+evaluate_output "claude-plugins/amazon-location" "claude-plugins/amazon-location"
 evaluate_output "context" "context"
 
 echo "=== Evaluation Complete ==="
