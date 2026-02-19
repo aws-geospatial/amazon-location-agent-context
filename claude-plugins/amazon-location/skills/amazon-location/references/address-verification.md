@@ -1,7 +1,4 @@
----
-name: Address Verification
-description: Validate addresses input from users before taking actions or persisting to databases
----
+# Address Verification
 
 # Address Verification
 

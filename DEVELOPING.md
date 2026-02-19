@@ -21,11 +21,12 @@ This document covers the build system, content structure, and how to contribute 
 │       │   └── plugin.json
 │       ├── .mcp.json
 │       └── skills/
-│           ├── amazon-location/
-│           │   └── SKILL.md
-│           ├── address-input/
-│           │   └── SKILL.md
-│           └── ...
+│           └── amazon-location/
+│               ├── SKILL.md
+│               └── references/
+│                   ├── address-input.md
+│                   ├── address-verification.md
+│                   └── ...     # Loaded on demand by Claude
 │
 ├── .claude-plugin/              # Claude Code Marketplace (generated output)
 │   └── marketplace.json
@@ -65,10 +66,10 @@ This document covers the build system, content structure, and how to contribute 
 │   │       ├── marketplace.json
 │   │       ├── mcp.json
 │   │       └── skills/
-│   │           ├── amazon-location/
-│   │           │   └── SKILL.md
-│   │           └── template/
-│   │               └── SKILL.md
+│   │           └── amazon-location/
+│   │               ├── SKILL.md
+│   │               └── references/
+│   │                   └── template.md
 │   │
 │   └── scripts/                 # Build scripts
 │       ├── build.sh             # Main build orchestrator
@@ -182,7 +183,7 @@ The build automatically generates:
 - `context/additional/my-feature/BRIEF.md`
 - `context/additional/my-feature/AGENTS.md`
 - `kiro-powers/amazon-location/steering/my-feature.md`
-- `claude-plugins/amazon-location/skills/my-feature/SKILL.md`
+- Content is added as a reference file in `claude-plugins/amazon-location/skills/amazon-location/references/my-feature.md`
 
 ### Add New Projection Type
 

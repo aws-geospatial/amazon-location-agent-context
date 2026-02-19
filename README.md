@@ -1,6 +1,6 @@
 # Amazon Location Service Agent Context
 
-Comprehensive context for LLMs to build location-aware applications with Amazon Location Service. Provides ready-to-use integrations for Kiro Powers, Claude Code Plugins, and direct context usage.
+Comprehensive context for LLMs to build location-aware applications with Amazon Location Service. Provides ready-to-use integrations as Kiro Powers, Claude Code Plugins, and direct context usage.
 
 ## Overview
 

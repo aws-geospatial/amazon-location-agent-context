@@ -1,7 +1,4 @@
----
-name: Web JavaScript
-description: Integrate Amazon Location services into web browser applications
----
+# Web JavaScript
 
 # Web Application Integration
 

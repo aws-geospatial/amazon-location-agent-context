@@ -1,7 +1,4 @@
----
-name: Address Input
-description: Create effective address input forms for users with address type ahead completion improving input speed and accuracy
----
+# Address Input
 
 # Address Input
 

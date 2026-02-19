@@ -5,8 +5,8 @@ description: Add location and geospatial context to applications with mapping, a
 
 ${AMAZON_LOCATION_SERVICE_OVERVIEW}
 
-## Additional resources
+## Reference Files
 
-For specific implementation guidance, see:
+Load these resources as needed for specific implementation guidance:
 
 ${SKILL_REFERENCES_LIST}

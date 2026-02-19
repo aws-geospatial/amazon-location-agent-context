@@ -1,7 +1,4 @@
----
-name: Dynamic Map Rendering
-description: Render dynamic maps with MapLibre
----
+# Dynamic Map Rendering
 
 # Dynamic Map Display
 

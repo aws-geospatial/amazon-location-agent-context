@@ -93,12 +93,46 @@ When discussing permissions for Amazon Location Places, Maps and Routes services
 - Supports both resource-based and resourceless operations
 - Enables faster subsequent map loads through CDN caching
 
-## Recommended MCP Servers
+## Recommended MCP Server
 
-For LLM clients that support Model Context Protocol (MCP), these servers can provide additional capabilities:
+For LLM clients that support Model Context Protocol (MCP), the unified [AWS MCP Server](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-aws-mcp-server.html) provides access to AWS documentation, API references, best practices, and direct AWS API interactions. It subsumes the functionality of the previous `aws-api-mcp-server` and `aws-knowledge-mcp-server`.
 
-- **[aws-knowledge-mcp-server](https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server)** - Access to AWS documentation, API references, and best practices without requiring AWS credentials
-- **[aws-api-mcp-server](https://awslabs.github.io/mcp/servers/aws-api-mcp-server)** - Direct AWS API interactions and CLI command execution (requires AWS credentials)
+**Setup:** See the [AWS MCP Server Getting Started Guide](https://docs.aws.amazon.com/aws-mcp/latest/userguide/getting-started-aws-mcp-server.html) for configuration instructions. By default, AWS operations use `us-east-1`. To change the default region, add `"--metadata", "AWS_REGION=<your-region>"` to the args in your MCP config. You can also override per-query by specifying a region in your prompt.
+
+### Troubleshooting AWS Credentials
+
+The AWS MCP Server requires valid AWS credentials to authenticate requests. If you encounter authentication errors:
+
+1. **Verify credentials are configured** by running:
+   ```
+   aws sts get-caller-identity
+   ```
+   If this fails, configure credentials using one of:
+   - `aws login` (recommended for console users, requires AWS CLI 2.32.0+)
+   - `aws configure sso` (for SSO users)
+   - `aws configure` (for IAM users with access keys)
+
+2. **Refresh expired credentials**: If authentication previously worked but now fails, your credentials may have expired. Re-run the login command for your authentication method.
+
+3. **Verify IAM permissions**: If not using an administrator role, ensure your IAM user or role has the required permissions:
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [{
+       "Effect": "Allow",
+       "Action": [
+         "aws-mcp:InvokeMcp",
+         "aws-mcp:CallReadOnlyTool",
+         "aws-mcp:CallReadWriteTool"
+       ],
+       "Resource": "*"
+     }]
+   }
+   ```
+
+4. **Install uv** (required for the MCP proxy): If `uvx` is not found, install it with:
+   - macOS/Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+   - Windows: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
 
 ## Additional Resources
 
@@ -106,13 +140,13 @@ For LLM clients that support Model Context Protocol (MCP), these servers can pro
 - [Amazon Location Service API Reference](https://docs.aws.amazon.com/location/latest/APIReference/)
 - [Amazon Location Service Samples Repository](https://github.com/aws-geospatial/amazon-location-samples)
 
-## Additional resources
+## Reference Files
 
-For specific implementation guidance, see:
+Load these resources as needed for specific implementation guidance:
 
-- Create effective address input forms for users with address type ahead completion improving input speed and accuracy → [../address-input/SKILL.md](../address-input/SKILL.md)
-- Validate addresses input from users before taking actions or persisting to databases → [../address-verification/SKILL.md](../address-verification/SKILL.md)
-- Render dynamic maps with MapLibre → [../dynamic-map/SKILL.md](../dynamic-map/SKILL.md)
-- Search for places or points of interest → [../places-search/SKILL.md](../places-search/SKILL.md)
-- Integrate Amazon Location services into web browser applications → [../web-javascript/SKILL.md](../web-javascript/SKILL.md)
+- [Address Input](./references/address-input.md) - Create effective address input forms for users with address type ahead completion improving input speed and accuracy
+- [Address Verification](./references/address-verification.md) - Validate addresses input from users before taking actions or persisting to databases
+- [Dynamic Map Rendering](./references/dynamic-map.md) - Render dynamic maps with MapLibre
+- [Places Search](./references/places-search.md) - Search for places or points of interest
+- [Web JavaScript](./references/web-javascript.md) - Integrate Amazon Location services into web browser applications
 

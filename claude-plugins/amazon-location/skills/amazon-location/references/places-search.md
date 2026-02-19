@@ -1,7 +1,4 @@
----
-name: Places Search
-description: Search for places or points of interest
----
+# Places Search
 
 # Places Search
 
