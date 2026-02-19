@@ -98,7 +98,7 @@ async function verifyAddress(addressString) {
 }
 
 // Usage
-const result = await verifyAddress("1600 Amphitheatre Pkwy, Mountain View, CA 94043");
+const result = await verifyAddress("500 E 4th St, Austin, TX 78701");
 
 if (result.valid) {
   console.log('Valid address:', result.standardized.Label);
@@ -129,8 +129,8 @@ async function verifyStructuredAddress(fields) {
 
 // Usage
 const formData = {
-  street: "1600 Amphitheatre Parkway",
-  city: "Mountain View",
+  street: "500 E 4th St",
+  city: "Austin",
   state: "CA",
   postalCode: "94043",
   country: "USA"
@@ -398,8 +398,8 @@ function generateVerificationReport(results) {
 
 // Usage
 const addressesToVerify = [
-  { id: 1, text: "1600 Amphitheatre Pkwy, Mountain View, CA" },
-  { id: 2, text: "1 Infinite Loop, Cupertino, CA" },
+  { id: 1, text: "500 E 4th St, Austin, TX 78701" },
+  { id: 2, text: "301 Congress Ave, Austin, TX 78701" },
   // ... more addresses
 ];
 
@@ -413,9 +413,9 @@ const report = generateVerificationReport(verificationResults);
 
 ### Pricing Tiers Based on Storage
 
-Amazon Location Places API has different pricing based on the `intendedUse` parameter:
+Amazon Location Places API has different pricing based on the `IntendedUse` parameter:
 
-**Stored Pricing** (`intendedUse: "Storage"`):
+**Stored Pricing** (`IntendedUse: "Storage"`):
 - ✅ Can store results indefinitely
 - ✅ Supports all features (Label, Core, Advanced)
 - ✅ Price cap - maximum cost per API call
@@ -453,20 +453,6 @@ Ask yourself:
 3. **Are you building analytics on historical place data?**
    - YES → Use `IntendedUse: "Storage"`
    - NO → Use default pricing
-
-### Best Practices for Storage
-
-If using stored pricing:
-- **Store both versions**: Keep original input AND standardized result
-- **Store coordinates**: Include lat/lon for future use
-- **Add metadata**: Track verification time, status, and type
-- **Implement deduplication**: Avoid storing duplicate addresses
-- **Consider retention policies**: Even with "Storage" pricing, implement data lifecycle management
-
-If NOT using stored pricing:
-- **Cache temporarily**: Use short-term caching (hours, not days)
-- **Don't persist to database**: Make real-time API calls as needed
-- **Use autocomplete**: Prefer address-input flow to reduce geocoding calls
 
 ## Error Handling
 
@@ -538,8 +524,7 @@ async function verifyAddressWithDetailedErrors(addressString) {
 ### Data Quality
 - **Understand pricing implications**: Review stored pricing before implementing long-term storage
 - **Use IntendedUse parameter**: Set `IntendedUse: "Storage"` if storing results indefinitely
-- **Consider caching vs storage**: Temporary caching (hours) doesn't require stored pricing
-- **Store metadata**: If using stored pricing, track verification time and status
+- **Consider caching vs storage**: Temporary session caching doesn't require stored pricing
 - **Handle missing components**: Not all addresses have all fields (street number, etc.)
 
 ### User Experience
@@ -549,13 +534,7 @@ async function verifyAddressWithDetailedErrors(addressString) {
 - **Provide helpful errors**: Explain WHY address is invalid and how to fix
 
 ### Performance
-- **Cache results**: Cache verification results for 24 hours
+- **Cache results**: Cache verification results temporarily within your session
 - **Rate limit batch jobs**: Wait 100ms between batch verifications
 - **Verify once per session**: Don't re-verify address user already confirmed
 - **Use autocomplete first**: Preferred over post-hoc verification
-
-### Security & Privacy
-- **Encrypt addresses**: Addresses are PII, encrypt at rest
-- **Limit retention**: Consider data retention policies
-- **Audit verification**: Log verification attempts for compliance
-- **Handle failures gracefully**: Don't expose validation logic to potential attackers

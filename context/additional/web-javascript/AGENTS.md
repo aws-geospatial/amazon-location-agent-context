@@ -18,13 +18,13 @@ The `@aws/amazon-location-client` package provides a pre-bundled JavaScript SDK 
 - All Amazon Location Service clients (geo-places, geo-routes, geo-maps, location)
 - Authentication helpers for API Keys and Cognito
 - TypeScript type definitions
-- No build/bundling required for CDN usage
+- No build step required
 
-**NPM Package**: [@aws/amazon-location-client](https://www.npmjs.com/package/@aws/amazon-location-client)
+**npm Package**: [@aws/amazon-location-client](https://www.npmjs.com/package/@aws/amazon-location-client)
 
 ## Installation
 
-### Via CDN (No Build Required)
+### Via Bundled Client
 
 ```html
 <!DOCTYPE html>
@@ -44,18 +44,24 @@ The `@aws/amazon-location-client` package provides a pre-bundled JavaScript SDK 
 </html>
 ```
 
-### Via NPM (For Build Tools)
+### Via npm (For Modular Applications)
+
+For applications using build tools (webpack, Vite, etc.), install only the AWS SDK clients you need:
 
 ```bash
-npm install @aws/amazon-location-client
+# Install only what you need
+npm install @aws-sdk/client-geo-places  # For Places, Geocoding
+npm install @aws-sdk/client-geo-routes  # For Routing
+npm install @aws-sdk/client-geo-maps    # For Maps
+npm install @aws-sdk/client-location    # For Geofencing, Tracking
 ```
 
 ```javascript
-import * as amazonLocationClient from '@aws/amazon-location-client';
-
-// Or import specific clients
-import { GeoPlacesClient, places } from '@aws/amazon-location-client';
+// Example: Import GeoPlacesClient for Places API
+import { GeoPlacesClient, GeocodeCommand } from '@aws-sdk/client-geo-places';
 ```
+
+**Note**: The rest of this document focuses on the bundled client. For detailed AWS SDK usage, see the [AWS SDK for JavaScript documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/).
 
 ## Authentication
 
@@ -438,11 +444,11 @@ async function callWithRetry(commandFn, maxRetries = 3) {
 - **Debounce input**: Wait 300ms after user stops typing before API calls
 
 ### Security
-- **Never commit keys**: Use environment variables or config files
-- **Restrict API keys**: Configure API key permissions to only needed operations
+- **API keys are client-safe**: Unlike AWS credentials, API keys are designed for client-side use and will be visible in browser source
+- **Follow AWS best practices**: See [API Key Best Practices](https://docs.aws.amazon.com/location/latest/developerguide/using-apikeys.html#api-keys-best-practices) for domain restrictions and key rotation
+- **Restrict API key permissions**: Configure API key to only access needed operations (Maps, Places, Routes)
 - **Prefer API keys for Maps/Places/Routes**: Simpler and recommended for these APIs
 - **Use Cognito when required**: For Geofencing/Tracking or per-user authorization
-- **Domain restrictions**: Restrict API key usage to your domains
 
 ### Error Handling
 - **Always use try-catch**: Wrap all API calls in try-catch blocks

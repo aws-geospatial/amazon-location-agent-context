@@ -9,19 +9,12 @@ Render interactive maps using MapLibre GL JS with Amazon Location Service.
 
 ## Table of Contents
 
-- [Core Principle](#core-principle)
 - [Basic Setup](#basic-setup)
 - [Complete Examples](#complete-examples)
 - [Map Styles](#map-styles)
 - [Advanced Features](#advanced-features)
 - [Error Handling](#error-handling)
 - [Best Practices](#best-practices)
-
-## Core Principle
-
-**MUST use direct URL passing to MapLibre instead of GetStyleDescriptor API calls for map initialization.**
-
-Why: The direct URL method enables proper CDN caching and faster subsequent loads. Making GetStyleDescriptor API calls during initialization adds unnecessary latency and API requests.
 
 ## Basic Setup
 
@@ -253,7 +246,6 @@ function showError(message) {
 ## Best Practices
 
 ### Performance
-- **Always use direct URL method**: Never call GetStyleDescriptor API during initialization
 - **Set validateStyle: false**: Saves 500ms+ on initial load
 - **Lazy load MapLibre**: Only load map library when user navigates to map view
 - **Limit markers**: Use clustering for 100+ markers (maplibre-gl-cluster)
