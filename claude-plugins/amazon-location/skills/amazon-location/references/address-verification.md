@@ -1,8 +1,5 @@
----
-name: Address Verification
-tags: address form, address input, address verification, address validation, geocoding
-description: Validate addresses input from users before taking actions or persisting to databases
----
+# Address Verification
+
 >**Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
 Validate and standardize addresses before persisting to databases or taking actions.

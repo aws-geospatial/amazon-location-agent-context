@@ -1,6 +1,6 @@
 # Amazon Location Service Agent Context
 
-Comprehensive context for LLMs to build location-aware applications with Amazon Location Service. Provides ready-to-use integrations for Kiro Powers and direct context usage.
+Comprehensive context for LLMs to build location-aware applications with Amazon Location Service. Provides ready-to-use integrations as Kiro Powers, Claude Code Plugins, and direct context usage.
 
 ## Overview
 
@@ -19,6 +19,16 @@ Install as a Power:
 Activate by keywords: Mention "location", "maps", "geocoding", "routing", "places", "geofencing", or "tracking" in your prompts.
 
 Progressive loading: Kiro automatically loads relevant steering files based on your task.
+
+### For Claude Code Users
+
+Install as a Plugin:
+
+1. Open Claude Code
+2. Add the marketplace: `/plugin marketplace add aws-geospatial/amazon-location-agent-context`
+3. Install the plugin: `/plugin install amazon-location@amazon-location-plugins`
+
+The plugin includes skills for the full Amazon Location Service overview plus individual skills for address input, address verification, dynamic maps, places search, and web JavaScript integration. MCP server configuration for AWS documentation and API access is included automatically.
 
 ### For Direct Context Usage
 

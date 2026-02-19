@@ -12,6 +12,9 @@ echo "Building context projection..."
 echo "Building kiro projection..."
 ./src/scripts/build-kiro.sh
 
+echo "Building claude plugin projection..."
+./src/scripts/build-claude.sh
+
 echo "Build complete!"
 echo ""
 

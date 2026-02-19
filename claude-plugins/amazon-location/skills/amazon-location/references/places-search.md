@@ -1,3 +1,5 @@
+# Places Search
+
 > **Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
 Search for places, points of interest, businesses, and addresses using Amazon Location Service Places APIs.

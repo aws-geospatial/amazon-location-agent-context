@@ -1,27 +1,7 @@
-**INSTRUCTION: Read this entire file and use it to inform how you should interact with the files in this project.**
-
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in RFC 2119.
-
-**BEFORE attempting ANY solution, you MUST:**
-
-1. **IMMEDIATELY** traverse the additional/* directories in the same directory
-   as this file
-2. **READ ALL BRIEF.md files** to identify relevant additional information
-3. **ONLY THEN** read corresponding AGENTS.md files for matching use cases, read
-   additional AGENTS.md files when the informaiton is relevant
-4. **DO NOT BEGIN IMPLEMENTATION** until discovery is complete
-
-**FAILURE TO COMPLETE DISCOVERY FIRST WILL RESULT IN SUBOPTIMAL SOLUTIONS**
-
-This project contains:
-1. This top level amazon-location.md file with basic Amazon Location Service information
-2. Sub-folders with additional information, each providing a BRIEF.md and AGENTS.md file
-   * BRIEF.md files describe when to use that use case
-   * AGENTS.md files provide implementation directives after use case is determined valuable
-
-# Amazon Location Service Context for AI and LLM Agents
-
-This document provides essential context for AI and LLM agents when working with Amazon Location Service projects.
+---
+name: amazon-location-service
+description: Integrate maps, geocoding, routing, places search, geofencing, and tracking via Amazon Location Service APIs. Use when building location-aware applications or working with geospatial data on AWS.
+---
 
 ## Overview
 
@@ -182,3 +162,14 @@ The [AWS MCP Server](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-i
 - [Amazon Location Service Developer Guide](https://docs.aws.amazon.com/location/latest/developerguide/)
 - [Amazon Location Service API Reference](https://docs.aws.amazon.com/location/latest/APIReference/)
 - [Amazon Location Service Samples Repository](https://github.com/aws-geospatial/amazon-location-samples)
+
+## Reference Files
+
+Load these resources as needed for specific implementation guidance:
+
+- [Address Input](./references/address-input.md) - Create effective address input forms for users with address type ahead completion improving input speed and accuracy
+- [Address Verification](./references/address-verification.md) - Validate addresses input from users before taking actions or persisting to databases
+- [Dynamic Map Rendering](./references/dynamic-map.md) - Render dynamic maps with MapLibre
+- [Places Search](./references/places-search.md) - Search for places or points of interest
+- [Web JavaScript](./references/web-javascript.md) - Integrate Amazon Location services into web browser applications
+

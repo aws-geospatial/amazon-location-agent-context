@@ -1,3 +1,5 @@
+# Web JavaScript
+
 > **Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
 Integrate Amazon Location Service into web applications using the bundled JavaScript client.

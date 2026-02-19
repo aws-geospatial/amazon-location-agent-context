@@ -1,3 +1,3 @@
 name: Places Search
-tags: place serch, poi, places, point of interest
+tags: place search, poi, places, point of interest
 description: Search for places or points of interest

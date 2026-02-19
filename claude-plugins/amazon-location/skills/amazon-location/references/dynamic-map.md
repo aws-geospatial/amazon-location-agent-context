@@ -1,8 +1,5 @@
----
-name: Dynamic Map Rendering
-tags: maps, map, dynamic map, maplibre, mapping
-description: Render dynamic maps with MapLibre
----
+# Dynamic Map Rendering
+
 > **Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
 Render interactive maps using MapLibre GL JS with Amazon Location Service.

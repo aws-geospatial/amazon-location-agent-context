@@ -1,0 +1,30 @@
+{
+  "name": "amazon-location-plugins",
+  "owner": {
+    "name": "Amazon Location Service"
+  },
+  "metadata": {
+    "description": "Amazon Location Service plugins for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "amazon-location",
+      "source": "./claude-plugins/amazon-location",
+      "description": "Skills and MCP tools for Amazon Location Service",
+      "keywords": [
+        "location",
+        "maps",
+        "geocoding",
+        "routing",
+        "places",
+        "geofencing",
+        "tracking",
+        "amazon-location",
+        "maplibre",
+        "address",
+        "coordinates"
+      ]
+    }
+  ]
+}

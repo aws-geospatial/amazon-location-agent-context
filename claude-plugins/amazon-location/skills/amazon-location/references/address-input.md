@@ -1,8 +1,5 @@
----
-name: Address Input
-tags: address form, address input, autocomplete, address validation, geocoding, GetPlace, type-ahead
-description: Create effective address input forms for users with address type ahead completion improving input speed and accuracy
----
+# Address Input
+
 > **Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
 Create effective address input forms with type-ahead completion that improves input speed and accuracy using Amazon Location Service Places APIs.

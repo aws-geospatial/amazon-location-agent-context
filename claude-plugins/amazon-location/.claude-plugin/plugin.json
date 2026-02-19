@@ -1,0 +1,21 @@
+{
+  "name": "amazon-location",
+  "description": "Add location and geospatial context to applications with mapping, address lookup, geofence evaluation and more",
+  "version": "1.0.0",
+  "author": {
+    "name": "Amazon Location Service"
+  },
+  "keywords": [
+    "location",
+    "maps",
+    "geocoding",
+    "routing",
+    "places",
+    "geofencing",
+    "tracking",
+    "amazon-location",
+    "maplibre",
+    "address",
+    "coordinates"
+  ]
+}

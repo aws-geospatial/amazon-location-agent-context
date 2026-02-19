@@ -2,7 +2,20 @@
 name: "amazon-location"
 displayName: "Amazon Location Service"
 description: "Add location and geospatial context to applications with mapping, address lookup, geofence evaluation and more"
-keywords: ["location", "maps", "geocoding", "routing", "places", "geofencing", "tracking", "amazon-location", "maplibre", "address", "coordinates"]
+keywords:
+  [
+    "location",
+    "maps",
+    "geocoding",
+    "routing",
+    "places",
+    "geofencing",
+    "tracking",
+    "amazon-location",
+    "maplibre",
+    "address",
+    "coordinates",
+  ]
 ---
 
 # Amazon Location Service Power
@@ -10,6 +23,24 @@ keywords: ["location", "maps", "geocoding", "routing", "places", "geofencing", "
 ## Onboarding
 
 ### Step 1: Understand the service
+
+## Overview
+
+Amazon Location Service provides geospatial APIs for maps, geocoding, routing, places search, geofencing, and tracking. Prefer the bundled JavaScript client (@aws/amazon-location-client) for web development and use resourceless API operations to avoid managing AWS resources.
+
+## When to Use This Skill
+
+Use this skill when:
+- Building location-aware web or mobile applications
+- Working with Amazon Location Service projects
+- Implementing maps, geocoding, routing, or places search
+- Adding geofencing or device tracking functionality
+- Integrating geospatial features into AWS applications
+
+Do NOT use this skill for:
+- Google Maps, Mapbox, or Leaflet-with-OSM projects (unless migrating to Amazon Location)
+- Generic GIS operations without AWS context
+- Non-AWS geospatial services
 
 ## Amazon Location Service API Overview
 
@@ -38,14 +69,56 @@ keywords: ["location", "maps", "geocoding", "routing", "places", "geofencing", "
 **API Keys** (SDK: location, JS: @aws-sdk/client-location)
 - API Keys: Grant access to public applications without exposing AWS credentials
 
+## Common Mistakes
+
+Avoid these frequent errors:
+
+1. **Using `Title` instead of `Address.Label` for display**: In Autocomplete results, always display `Address.Label`. The `Title` field may show components in reverse order and is not suitable for user-facing text.
+
+2. **Using GetStyleDescriptor API for map initialization**: MUST use direct URL passing to MapLibre (`https://maps.geo.{region}.amazonaws.com/v2/styles/Standard/descriptor?key={apiKey}`) instead of making GetStyleDescriptor API calls. The direct URL method is required for proper map rendering.
+
+3. **Forgetting `validateStyle: false` in MapLibre config**: Always set `validateStyle: false` in the MapLibre Map constructor for faster map load times with Amazon Location styles.
+
+4. **Mixing resource-based and resourceless operations**: When possible, prefer resourceless operations (direct API calls without pre-created resources) for simpler deployment and permissions.
+
+5. **Inconsistent API operation naming**: Use the format `service:Operation` when referencing APIs (e.g., `geo-places:Geocode`, `geo-maps:GetStyleDescriptor`). SDK clients use `@aws-sdk/client-*` format.
+
+6. **Not handling nested Address objects correctly**: The Address object from GetPlace contains nested objects (`Region.Code`, `Region.Name`, `Country.Code2`, etc.), not flat strings. Access nested properties correctly.
+
+## API Selection Guidance
+
+Choose the right API for your use case:
+
+### Address Input & Validation
+- **Autocomplete** → Type-ahead in address forms (partial input: "123 Main")
+- **GetPlace** → Get full details after user selects autocomplete result (by PlaceId)
+- **Geocode** → Validate complete user-typed address or convert address to coordinates
+
+### Finding Locations
+- **SearchText** → General text search ("pizza near Seattle")
+- **SearchNearby** → Find places near a coordinate (restaurants within 5km)
+- **Suggest** → Predict places/POIs from partial or misspelled input
+- **Autocomplete** → Address-specific predictions (not for general POI search)
+
+### Geocoding
+- **Geocode (Forward)** → Address string → Coordinates
+- **ReverseGeocode** → Coordinates → Address
+
+### Maps
+- **Dynamic Maps (tiles + MapLibre)** → Interactive maps requiring pan, zoom, markers
+- **Static Maps (image)** → Non-interactive map images for thumbnails or email
+
+### Routing
+- **CalculateRoutes** → Single route between origin and destination
+- **CalculateRouteMatrix** → Multiple origins/destinations travel times
+- **CalculateIsolines** → Service areas (all locations reachable within time/distance)
+
 ## LLM Context Files
 
-Amazon Location Service provides structured context files specifically designed for AI and LLMs following the llms.txt standard:
+When you need detailed API parameter specifications or service capabilities not covered in the reference files, fetch these llms.txt resources:
 
-- **Developer Guide Context**: https://docs.aws.amazon.com/location/latest/developerguide/llms.txt - Overview of Amazon Location Service concepts, features, and developer guidance
-- **API Reference Context**: https://docs.aws.amazon.com/location/latest/APIReference/llms.txt - Structured information about all available Amazon Location Service APIs and operations
-
-These context files should be used to get an accurate overview of what is available in Amazon Location Service and to ensure responses are based on current service capabilities.
+- **Developer Guide**: https://docs.aws.amazon.com/location/latest/developerguide/llms.txt
+- **API Reference**: https://docs.aws.amazon.com/location/latest/APIReference/llms.txt
 
 ## Key Guidance for Better Recommendations
 
@@ -101,12 +174,9 @@ When discussing permissions for Amazon Location Places, Maps and Routes services
 - Supports both resource-based and resourceless operations
 - Enables faster subsequent map loads through CDN caching
 
-## Recommended MCP Servers
+## MCP Server Integration
 
-For LLM clients that support Model Context Protocol (MCP), these servers can provide additional capabilities:
-
-- **[aws-knowledge-mcp-server](https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server)** - Access to AWS documentation, API references, and best practices without requiring AWS credentials
-- **[aws-api-mcp-server](https://awslabs.github.io/mcp/servers/aws-api-mcp-server)** - Direct AWS API interactions and CLI command execution (requires AWS credentials)
+The [AWS MCP Server](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-aws-mcp-server.html) provides access to AWS documentation, API references, and direct API interactions. See the [Getting Started Guide](https://docs.aws.amazon.com/aws-mcp/latest/userguide/getting-started-aws-mcp-server.html) for setup and credential configuration. To use a non-default region, add `"--metadata", "AWS_REGION=<your-region>"` to your MCP config args.
 
 ## Additional Resources
 
@@ -114,13 +184,11 @@ For LLM clients that support Model Context Protocol (MCP), these servers can pro
 - [Amazon Location Service API Reference](https://docs.aws.amazon.com/location/latest/APIReference/)
 - [Amazon Location Service Samples Repository](https://github.com/aws-geospatial/amazon-location-samples)
 
-### Step 2: Verify MCP servers
+### Step 2: Verify MCP server
 
-If available, use these MCP servers for enhanced capabilities:
-- **aws-api-mcp-server**: AWS API exploration and testing
-- **aws-knowledge-mcp-server**: AWS documentation access
+If available, use the **aws-mcp** server for enhanced capabilities including AWS documentation access, API exploration, and direct AWS API interactions.
 
-Check if configured in your environment.
+Check if configured in your environment. If the server fails to connect, refer to the "Troubleshooting AWS Credentials" section in the overview above.
 
 ## When to Load Steering Files
 

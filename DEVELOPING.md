@@ -15,6 +15,22 @@ This document covers the build system, content structure, and how to contribute 
 │           ├── address-verification.md
 │           └── ...
 │
+├── claude-plugins/              # Claude Code Plugin (generated output)
+│   └── amazon-location/
+│       ├── .claude-plugin/
+│       │   └── plugin.json
+│       ├── .mcp.json
+│       └── skills/
+│           └── amazon-location/
+│               ├── SKILL.md
+│               └── references/
+│                   ├── address-input.md
+│                   ├── address-verification.md
+│                   └── ...     # Loaded on demand by Claude
+│
+├── .claude-plugin/              # Claude Code Marketplace (generated output)
+│   └── marketplace.json
+│
 ├── context/                     # Direct context (generated output)
 │   ├── amazon-location.md
 │   └── additional/
@@ -39,16 +55,27 @@ This document covers the build system, content structure, and how to contribute 
 │   │   │           ├── BRIEF.md
 │   │   │           └── AGENTS.md
 │   │   │
-│   │   └── kiro/                # Kiro Power templates
-│   │       ├── POWER.md
+│   │   ├── kiro/                # Kiro Power templates
+│   │   │   ├── POWER.md
+│   │   │   ├── mcp.json
+│   │   │   └── steering/
+│   │   │       └── template.md
+│   │   │
+│   │   └── claude/              # Claude Code Plugin templates
+│   │       ├── plugin.json
+│   │       ├── marketplace.json
 │   │       ├── mcp.json
-│   │       └── steering/
-│   │           └── template.md
+│   │       └── skills/
+│   │           └── amazon-location/
+│   │               ├── SKILL.md
+│   │               └── references/
+│   │                   └── template.md
 │   │
 │   └── scripts/                 # Build scripts
 │       ├── build.sh             # Main build orchestrator
 │       ├── build-base.sh        # Build context projection
 │       ├── build-kiro.sh        # Build Kiro projection
+│       ├── build-claude.sh      # Build Claude Code projection
 │       └── evaluate-context-size.sh
 │
 ├── README.md
@@ -69,6 +96,7 @@ The build system uses shell variable expansion to generate projections from sour
 # Build specific projection
 ./src/scripts/build-base.sh    # Generates context/
 ./src/scripts/build-kiro.sh    # Generates kiro-powers/amazon-location/
+./src/scripts/build-claude.sh  # Generates claude-plugins/amazon-location/ and .claude-plugin/
 ```
 
 ### Build Process
@@ -83,6 +111,8 @@ Output:
 
 - `context/` - Base context projection
 - `kiro-powers/amazon-location/` - Kiro Power projection
+- `claude-plugins/amazon-location/` - Claude Code Plugin projection
+- `.claude-plugin/` - Claude Code Marketplace manifest
 
 Files in output directories should never be edited manually—they are overwritten on each build.
 
@@ -153,6 +183,7 @@ The build automatically generates:
 - `context/additional/my-feature/BRIEF.md`
 - `context/additional/my-feature/AGENTS.md`
 - `kiro-powers/amazon-location/steering/my-feature.md`
+- Content is added as a reference file in `claude-plugins/amazon-location/skills/amazon-location/references/my-feature.md`
 
 ### Add New Projection Type
 
@@ -180,3 +211,19 @@ To test the power locally while developing:
 3. Select the `kiro-powers/amazon-location/` directory from your local checkout
 
 This lets you iterate on content changes and immediately test them in Kiro without publishing.
+
+## Local Testing with Claude Code
+
+To test the Claude Code plugin locally while developing:
+
+1. Run the build: `./src/scripts/build.sh`
+2. In Claude Code, add the local marketplace: `/plugin marketplace add ./`
+3. Install the plugin: `/plugin install amazon-location@amazon-location-plugins`
+
+Alternatively, you can test the plugin directly without the marketplace:
+
+```bash
+claude --plugin-dir ./claude-plugins/amazon-location
+```
+
+After making changes, rebuild and restart Claude Code to pick up updates.
