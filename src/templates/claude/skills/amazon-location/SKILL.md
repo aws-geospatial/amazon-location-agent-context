@@ -1,6 +1,6 @@
 ---
-name: Amazon Location Service
-description: Add location and geospatial context to applications with mapping, address lookup, geofence evaluation and more. Use when working with Amazon Location Service projects involving maps, geocoding, routing, places, geofencing, or tracking.
+name: amazon-location-service
+description: Integrate maps, geocoding, routing, places search, geofencing, and tracking via Amazon Location Service APIs. Use when building location-aware applications or working with geospatial data on AWS.
 ---
 
 ${AMAZON_LOCATION_SERVICE_OVERVIEW}

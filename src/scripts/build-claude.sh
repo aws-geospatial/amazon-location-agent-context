@@ -37,20 +37,39 @@ echo "  Generated: claude-plugins/amazon-location/.mcp.json"
 
 # Generate reference files and build the references list
 SKILL_REFERENCES_LIST=""
-reference_template="src/templates/claude/skills/amazon-location/references/template.md"
 for entry_file in src/content/additional/*.sh; do
     [ -f "$entry_file" ] || continue
     entry_name=$(basename "$entry_file" .sh)
     entry_var=$(echo "$entry_name" | tr '[:lower:]-' '[:upper:]_')
     when_var="${entry_var}_HEADER_WHEN"
     name_var="${entry_var}_HEADER_NAME"
+    content_var="${entry_var}_CONTENT"
 
     # Generate reference file
     output="claude-plugins/amazon-location/skills/amazon-location/references/$entry_name.md"
-    eval "cat <<TEMPLATE_EOF
-$(sed "s/<entry>/$entry_var/g" "$reference_template")
-TEMPLATE_EOF
-" > "$output"
+
+    # Check if there's a markdown file with the content (new approach)
+    content_md_file="src/content/references/$entry_name.md"
+
+    if [ -f "$content_md_file" ]; then
+        # Use markdown file content (avoids bash heredoc parsing issues)
+        {
+            echo "# ${!name_var}"
+            echo ""
+            cat "$content_md_file"
+        } > "$output"
+    elif [ -n "${!content_var:-}" ]; then
+        # Fallback to variable content (legacy approach)
+        {
+            echo "# ${!name_var}"
+            echo ""
+            echo "${!content_var}"
+        } > "$output"
+    else
+        echo "  Warning: No content found for $entry_name"
+        continue
+    fi
+
     echo "  Generated: $output"
 
     # Add to references list
