@@ -79,6 +79,8 @@ check_directory "kiro-powers/amazon-location/steering" 1
 check_directory "claude-plugins/amazon-location" 1
 check_directory "claude-plugins/amazon-location/skills" 1
 check_directory ".claude-plugin" 1
+check_directory "skills/amazon-location-service" 1
+check_directory "skills/amazon-location-service/references" 1
 echo ""
 
 echo "## Checking required files..."
@@ -89,6 +91,7 @@ check_file "kiro-powers/amazon-location/mcp.json"
 check_file "claude-plugins/amazon-location/.claude-plugin/plugin.json"
 check_file "claude-plugins/amazon-location/.mcp.json"
 check_file ".claude-plugin/marketplace.json"
+check_file "skills/amazon-location-service/SKILL.md"
 echo ""
 
 echo "## Checking for unexpanded template variables..."
@@ -98,7 +101,7 @@ while IFS= read -r file; do
     if ! check_no_template_vars "$file"; then
         template_errors=$((template_errors + 1))
     fi
-done < <(find context kiro-powers claude-plugins -type f \( -name "*.md" -o -name "*.json" \) 2>/dev/null)
+done < <(find context kiro-powers claude-plugins skills -type f \( -name "*.md" -o -name "*.json" \) 2>/dev/null)
 
 if [ "$template_errors" -eq 0 ]; then
     echo "✓ PASS: No unexpanded template variables found"
@@ -114,7 +117,7 @@ while IFS= read -r file; do
         json_errors=$((json_errors + 1))
         errors=$((errors + 1))
     fi
-done < <(find context kiro-powers claude-plugins .claude-plugin -type f -name "*.json" 2>/dev/null)
+done < <(find context kiro-powers claude-plugins .claude-plugin skills -type f -name "*.json" 2>/dev/null)
 
 if [ "$json_errors" -eq 0 ]; then
     echo "✓ PASS: All JSON files are valid"
@@ -151,6 +154,7 @@ check_directory_size() {
 check_directory_size "context"
 check_directory_size "kiro-powers/amazon-location"
 check_directory_size "claude-plugins/amazon-location"
+check_directory_size "skills/amazon-location-service"
 echo ""
 
 echo "=== Verification Complete ==="
