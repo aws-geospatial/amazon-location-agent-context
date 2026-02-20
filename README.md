@@ -1,6 +1,6 @@
 # Amazon Location Service Agent Context
 
-Comprehensive context for LLMs to build location-aware applications with Amazon Location Service. Provides ready-to-use integrations as Kiro Powers, Claude Code Plugins, and direct context usage.
+Comprehensive context for LLMs to build location-aware applications with Amazon Location Service. Provides ready-to-use integrations as Kiro Powers, Claude Code Plugins, [Agent Skills](https://agentskills.io), and direct context files.
 
 ## Overview
 
@@ -30,6 +30,12 @@ Install as a Plugin:
 
 The plugin includes skills for the full Amazon Location Service overview plus individual skills for address input, address verification, dynamic maps, places search, and web JavaScript integration. MCP server configuration for AWS documentation and API access is included automatically.
 
+### For Agent Skills Compatible Tools
+
+The `skills/amazon-location-service/` directory is an [Agent Skills](https://agentskills.io) package — an open standard for giving agents new capabilities. See [agentskills.io](https://agentskills.io) for the current list of compatible tools.
+
+Use it by pointing your tool at the `skills/amazon-location-service/` directory. The `SKILL.md` file includes the required frontmatter (`name`, `description`) per the Agent Skills spec, and reference files in `references/` are loaded on demand for progressive disclosure.
+
 ### For Direct Context Usage
 
 Load files from `context/` directly into your LLM:
@@ -49,10 +55,10 @@ Kiro Powers include MCP configuration automatically. For other clients, configur
 ## Key Principles
 
 - **Progressive Disclosure**: In order for these sources of context for LLMs to be generally effective, they must avoid providing context unrelated to the current session. Minimal additional context to guide LLMs through common hallucinations provide a much more usable set of context files.
-- **Custom Client Integrations**: People use LLMs through clients, and those clients have preferred methods for loading context and tooling. We should support preferred client integration methods (Kiro Powers, Claude Skills, etc.). The core context files are provided for generality and are tuned in such a way to encourage progressive disclosure for any client, without relying on specific client features.
+- **Custom Client Integrations**: People use LLMs through clients, and those clients have preferred methods for loading context and tooling. We should support preferred client integration methods (Kiro Powers, Claude Plugins, Agent Skills, etc.). The core context files are provided for generality and are tuned in such a way to encourage progressive disclosure for any client, without relying on specific client features.
 - **Minimal Context Performs Best**: LLMs are able to drive a lot of value themselves. In order to effectively leverage this value and avoid adding weight to undesirable results, these context files must address common hallucinations and knowledge gaps but avoid as little extra information as possible.
 - **Mutating Actions Require Human Approval**: All tool configuration in this package will be setup to be as powerful as possible without granting access to mutating actions without additional configuration or manual approval.
-- **Self-Contained Projections**: Each projection (Kiro, Claude, etc.) must be self-contained for distribution. Content from the `src/context/` directory is merged into projections during the build process, as clients only package the projection directory (not the source context files).
+- **Self-Contained Projections**: Each projection (Kiro, Claude, Skills, etc.) must be self-contained for distribution. Content from the `src/context/` directory is merged into projections during the build process, as clients only package the projection directory (not the source context files).
 
 ## Contributing
 

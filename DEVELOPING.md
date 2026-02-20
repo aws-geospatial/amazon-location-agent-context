@@ -28,6 +28,14 @@ This document covers the build system, content structure, and how to contribute 
 │                   ├── address-verification.md
 │                   └── ...     # Loaded on demand by Claude
 │
+├── skills/                      # Agent Skills (generated output)
+│   └── amazon-location-service/
+│       ├── SKILL.md
+│       └── references/
+│           ├── address-input.md
+│           ├── address-verification.md
+│           └── ...              # Loaded on demand by compatible tools
+│
 ├── .claude-plugin/              # Claude Code Marketplace (generated output)
 │   └── marketplace.json
 │
@@ -96,7 +104,7 @@ The build system uses shell variable expansion to generate projections from sour
 # Build specific projection
 ./src/scripts/build-base.sh    # Generates context/
 ./src/scripts/build-kiro.sh    # Generates kiro-powers/amazon-location/
-./src/scripts/build-claude.sh  # Generates claude-plugins/amazon-location/ and .claude-plugin/
+./src/scripts/build-claude.sh  # Generates claude-plugins/amazon-location/, .claude-plugin/, and skills/amazon-location-service/
 ```
 
 ### Build Process
@@ -112,6 +120,7 @@ Output:
 - `context/` - Base context projection
 - `kiro-powers/amazon-location/` - Kiro Power projection
 - `claude-plugins/amazon-location/` - Claude Code Plugin projection
+- `skills/amazon-location-service/` - Agent Skills projection
 - `.claude-plugin/` - Claude Code Marketplace manifest
 
 Files in output directories should never be edited manually—they are overwritten on each build.
@@ -183,7 +192,7 @@ The build automatically generates:
 - `context/additional/my-feature/BRIEF.md`
 - `context/additional/my-feature/AGENTS.md`
 - `kiro-powers/amazon-location/steering/my-feature.md`
-- Content is added as a reference file in `claude-plugins/amazon-location/skills/amazon-location/references/my-feature.md`
+- Content is added as a reference file in `claude-plugins/amazon-location/skills/amazon-location-service/references/my-feature.md`
 
 ### Add New Projection Type
 
