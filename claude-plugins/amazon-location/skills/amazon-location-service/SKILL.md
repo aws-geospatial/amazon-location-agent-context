@@ -173,6 +173,7 @@ Load these resources as needed for specific implementation guidance:
 
 - [Address Input](./references/address-input.md) - Create effective address input forms for users with address type ahead completion improving input speed and accuracy
 - [Address Verification](./references/address-verification.md) - Validate addresses input from users before taking actions or persisting to databases
+- [Calculate Routes](./references/calculate-routes.md) - Calculate routes between locations with customizable travel options and display them on maps
 - [Dynamic Map Rendering](./references/dynamic-map.md) - Render dynamic maps with MapLibre
 - [Places Search](./references/places-search.md) - Search for places or points of interest
 - [Web JavaScript](./references/web-javascript.md) - Integrate Amazon Location services into web browser applications
