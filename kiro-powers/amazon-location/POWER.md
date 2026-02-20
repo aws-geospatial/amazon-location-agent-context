@@ -196,6 +196,7 @@ Load specific steering files based on the task:
 
 - Create effective address input forms for users with address type ahead completion improving input speed and accuracy → [steering/address-input.md](steering/address-input.md)
 - Validate addresses input from users before taking actions or persisting to databases → [steering/address-verification.md](steering/address-verification.md)
+- Calculate routes between locations with customizable travel options and display them on maps → [steering/calculate-routes.md](steering/calculate-routes.md)
 - Render dynamic maps with MapLibre → [steering/dynamic-map.md](steering/dynamic-map.md)
 - Search for places or points of interest → [steering/places-search.md](steering/places-search.md)
 - Integrate Amazon Location services into web browser applications → [steering/web-javascript.md](steering/web-javascript.md)
