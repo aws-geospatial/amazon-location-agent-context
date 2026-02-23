@@ -9,8 +9,8 @@
   },
   "plugins": [
     {
-      "name": "amazon-location",
-      "source": "./claude-plugins/amazon-location",
+      "name": "amazon-location-service",
+      "source": "./claude-plugins/amazon-location-service",
       "description": "Skills and MCP tools for Amazon Location Service",
       "keywords": [
         "location",

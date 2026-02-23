@@ -1,5 +1,5 @@
 ---
-name: "amazon-location"
+name: "amazon-location-service"
 displayName: "Amazon Location Service"
 description: "Add location and geospatial context to applications with mapping, address lookup, geofence evaluation and more"
 keywords:
