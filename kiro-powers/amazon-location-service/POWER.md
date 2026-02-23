@@ -1,7 +1,7 @@
 ---
 name: "amazon-location-service"
-displayName: "Amazon Location Service"
-description: "Add location and geospatial context to applications with mapping, address lookup, geofence evaluation and more"
+displayName: "Build geospatial applications with Amazon Location Service"
+description: "Guide developers through adding maps, places search, geocoding, routing, and other geospatial features with Amazon Location Service, including authentication setup, SDK integration, and best practices"
 keywords:
   [
     "location",
@@ -16,6 +16,7 @@ keywords:
     "address",
     "coordinates",
   ]
+author: "AWS"
 ---
 
 # Amazon Location Service Power
@@ -215,3 +216,22 @@ Load specific steering files based on the task:
 - Search for places or points of interest → [steering/places-search.md](steering/places-search.md)
 - Integrate Amazon Location services into web browser applications → [steering/web-javascript.md](steering/web-javascript.md)
 
+
+## License
+
+MIT No Attribution
+
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
