@@ -332,8 +332,8 @@ async function suggestPlaces(partialQuery, biasPosition = null) {
 
     response.ResultItems.forEach((item) => {
       console.log(item.Title); // "Starbucks"
-      console.log(item.PlaceId); // For fetching full details
-      console.log(item.SuggestType); // "Place" or "Category"
+      console.log(item.Place?.PlaceId); // For fetching full details
+      console.log(item.SuggestResultItemType); // "Place" or "Query"
     });
 
     return response.ResultItems;

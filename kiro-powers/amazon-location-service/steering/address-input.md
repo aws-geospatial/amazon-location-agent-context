@@ -48,6 +48,7 @@ Address input forms SHOULD implement this three-stage flow:
 **Critical**: Always display `Address.Label` to users, NOT `Title`. The `Title` field may show components in reverse order and is not suitable for display.
 
 **Returns**: Array of suggestions, each with:
+
 - `PlaceId` - Use this to fetch full details with GetPlace
 - `Address.Label` - Display this to users (e.g., "123 Main St, Seattle, WA 98101")
 - `Title` - DO NOT display (may be reversed: "98101, WA, Seattle, Main St, 123")
@@ -104,81 +105,85 @@ Address input forms SHOULD implement this three-stage flow:
 ```javascript
 // Initialize client
 const authHelper = amazonLocationClient.withAPIKey(API_KEY, REGION);
-const client = new amazonLocationClient.GeoPlacesClient(authHelper.getClientConfig());
+const client = new amazonLocationClient.GeoPlacesClient(
+  authHelper.getClientConfig(),
+);
 
 let selectedPlaceId = null;
 
 // Stage 1: Autocomplete as user types
-document.getElementById('address-input').addEventListener('input', async (e) => {
-  const query = e.target.value;
+document
+  .getElementById("address-input")
+  .addEventListener("input", async (e) => {
+    const query = e.target.value;
 
-  if (query.length < 3) {
-    document.getElementById('suggestions').innerHTML = '';
-    return;
-  }
+    if (query.length < 3) {
+      document.getElementById("suggestions").innerHTML = "";
+      return;
+    }
 
-  try {
-    const command = new amazonLocationClient.places.AutocompleteCommand({
-      QueryText: query,
-      MaxResults: 5
-    });
+    try {
+      const command = new amazonLocationClient.places.AutocompleteCommand({
+        QueryText: query,
+        MaxResults: 5,
+      });
 
-    const response = await client.send(command);
+      const response = await client.send(command);
 
-    // Display suggestions using Address.Label (NOT Title!)
-    const suggestionsHtml = response.ResultItems.map(item =>
-      `<div class="suggestion" data-place-id="${item.PlaceId}">
+      // Display suggestions using Address.Label (NOT Title!)
+      const suggestionsHtml = response.ResultItems.map(
+        (item) =>
+          `<div class="suggestion" data-place-id="${item.Place?.PlaceId}">
         ${item.Address.Label}
-      </div>`
-    ).join('');
+      </div>`,
+      ).join("");
 
-    document.getElementById('suggestions').innerHTML = suggestionsHtml;
-
-  } catch (error) {
-    console.error('Autocomplete error:', error);
-    // Show error to user
-  }
-});
+      document.getElementById("suggestions").innerHTML = suggestionsHtml;
+    } catch (error) {
+      console.error("Autocomplete error:", error);
+      // Show error to user
+    }
+  });
 
 // Stage 2: User selects suggestion → GetPlace
-document.getElementById('suggestions').addEventListener('click', async (e) => {
-  if (!e.target.classList.contains('suggestion')) return;
+document.getElementById("suggestions").addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("suggestion")) return;
 
   const placeId = e.target.dataset.placeId;
   selectedPlaceId = placeId;
 
   try {
     const command = new amazonLocationClient.places.GetPlaceCommand({
-      PlaceId: placeId
+      PlaceId: placeId,
     });
 
     const response = await client.send(command);
     const place = response;
 
     // Populate form with complete details
-    document.getElementById('address-input').value = place.Address.Label;
-    document.getElementById('street').value =
-      `${place.Address.AddressNumber || ''} ${place.Address.Street || ''}`.trim();
-    document.getElementById('city').value = place.Address.Locality || '';
-    document.getElementById('state').value = place.Address.Region?.Code || '';
-    document.getElementById('zip').value = place.Address.PostalCode || '';
-    document.getElementById('country').value = place.Address.Country?.Code2 || '';
+    document.getElementById("address-input").value = place.Address.Label;
+    document.getElementById("street").value =
+      `${place.Address.AddressNumber || ""} ${place.Address.Street || ""}`.trim();
+    document.getElementById("city").value = place.Address.Locality || "";
+    document.getElementById("state").value = place.Address.Region?.Code || "";
+    document.getElementById("zip").value = place.Address.PostalCode || "";
+    document.getElementById("country").value =
+      place.Address.Country?.Code2 || "";
 
     // Store coordinates for later use
-    document.getElementById('lat').value = place.Position[1];
-    document.getElementById('lon').value = place.Position[0];
+    document.getElementById("lat").value = place.Position[1];
+    document.getElementById("lon").value = place.Position[0];
 
     // Clear suggestions
-    document.getElementById('suggestions').innerHTML = '';
-
+    document.getElementById("suggestions").innerHTML = "";
   } catch (error) {
-    console.error('GetPlace error:', error);
-    alert('Failed to fetch address details');
+    console.error("GetPlace error:", error);
+    alert("Failed to fetch address details");
   }
 });
 
 // Stage 3: User submits without selecting → Geocode
-document.getElementById('submit').addEventListener('click', async () => {
+document.getElementById("submit").addEventListener("click", async () => {
   if (selectedPlaceId) {
     // User selected from autocomplete, proceed
     submitForm();
@@ -186,23 +191,23 @@ document.getElementById('submit').addEventListener('click', async () => {
   }
 
   // User typed address without selecting, validate with Geocode
-  const query = document.getElementById('address-input').value;
+  const query = document.getElementById("address-input").value;
 
   if (!query) {
-    alert('Please enter an address');
+    alert("Please enter an address");
     return;
   }
 
   try {
     const command = new amazonLocationClient.places.GeocodeCommand({
       QueryText: query,
-      MaxResults: 1
+      MaxResults: 1,
     });
 
     const response = await client.send(command);
 
     if (response.ResultItems.length === 0) {
-      alert('Address not found. Please check and try again.');
+      alert("Address not found. Please check and try again.");
       return;
     }
 
@@ -210,42 +215,42 @@ document.getElementById('submit').addEventListener('click', async () => {
 
     // Confirm with user if address was standardized
     if (result.Address.Label !== query) {
-      const confirmed = confirm(
-        `Did you mean: ${result.Address.Label}?`
-      );
+      const confirmed = confirm(`Did you mean: ${result.Address.Label}?`);
       if (!confirmed) return;
     }
 
     // Populate with geocoded result
-    document.getElementById('lat').value = result.Position[1];
-    document.getElementById('lon').value = result.Position[0];
+    document.getElementById("lat").value = result.Position[1];
+    document.getElementById("lon").value = result.Position[0];
 
     submitForm();
-
   } catch (error) {
-    console.error('Geocode error:', error);
-    alert('Failed to validate address');
+    console.error("Geocode error:", error);
+    alert("Failed to validate address");
   }
 });
 
 function submitForm() {
   // Proceed with form submission
-  console.log('Submitting form with validated address');
+  console.log("Submitting form with validated address");
 }
 ```
 
 ## Error Handling
 
 ### Autocomplete Errors
+
 - **Rate limiting**: Implement debouncing (300ms delay) before calling API
 - **Network failures**: Show cached suggestions or friendly message
 - **No results**: Allow user to continue typing or submit for geocoding
 
 ### GetPlace Errors
+
 - **Invalid PlaceId**: Should not happen if using autocomplete results, but handle gracefully
 - **Network timeout**: Retry once, then show error message
 
 ### Geocode Errors
+
 - **No results**: Prompt user to check spelling or use autocomplete
 - **Multiple results**: Present user with options to select correct one
 - **Ambiguous address**: Ask for more details (e.g., city/state)
@@ -253,23 +258,27 @@ function submitForm() {
 ## Best Practices
 
 ### Performance
+
 - **Debounce autocomplete**: Wait 300ms after user stops typing before API call
 - **Cancel previous requests**: Cancel in-flight autocomplete requests when new input arrives
 - **Cache results**: Cache autocomplete results for repeated queries
 
 ### User Experience
+
 - **Always use Address.Label**: Never display the `Title` field - it may be reversed
 - **Show visual feedback**: Loading indicators during API calls
 - **Keyboard navigation**: Allow arrow keys and Enter to navigate suggestions
 - **Clear affordances**: Make it obvious when address is validated
 
 ### Data Handling
+
 - **Store PlaceId**: Keep PlaceId with address for future reference
 - **Store coordinates**: Save Position for mapping and distance calculations
 - **Handle missing fields**: Not all addresses have all components (e.g., AddressNumber)
 - **Respect nested structure**: Access `address.Region.Code`, not `address.RegionCode`
 
 ### Accessibility
+
 - **ARIA labels**: Use proper ARIA attributes for autocomplete
 - **Keyboard support**: Full keyboard navigation for suggestions
 - **Screen reader announcements**: Announce number of suggestions found
