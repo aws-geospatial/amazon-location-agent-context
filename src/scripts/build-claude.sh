@@ -19,8 +19,8 @@ done
 
 # Clean and create output directories
 rm -rf claude-plugins .claude-plugin skills
-mkdir -p claude-plugins/amazon-location/.claude-plugin
-mkdir -p claude-plugins/amazon-location/skills/amazon-location-service/references
+mkdir -p claude-plugins/amazon-location-service/.claude-plugin
+mkdir -p claude-plugins/amazon-location-service/skills/amazon-location-service/references
 mkdir -p skills/amazon-location-service/references
 mkdir -p .claude-plugin
 
@@ -29,12 +29,12 @@ cp "src/templates/claude/marketplace.json" ".claude-plugin/marketplace.json"
 echo "  Generated: .claude-plugin/marketplace.json"
 
 # Generate plugin.json
-cp "src/templates/claude/plugin.json" "claude-plugins/amazon-location/.claude-plugin/plugin.json"
-echo "  Generated: claude-plugins/amazon-location/.claude-plugin/plugin.json"
+cp "src/templates/claude/plugin.json" "claude-plugins/amazon-location-service/.claude-plugin/plugin.json"
+echo "  Generated: claude-plugins/amazon-location-service/.claude-plugin/plugin.json"
 
 # Generate .mcp.json for the plugin
-cp "src/templates/claude/mcp.json" "claude-plugins/amazon-location/.mcp.json"
-echo "  Generated: claude-plugins/amazon-location/.mcp.json"
+cp "src/templates/claude/mcp.json" "claude-plugins/amazon-location-service/.mcp.json"
+echo "  Generated: claude-plugins/amazon-location-service/.mcp.json"
 
 # Generate reference files and build the references list
 SKILL_REFERENCES_LIST=""
@@ -47,7 +47,7 @@ for entry_file in src/content/additional/*.sh; do
     content_var="${entry_var}_CONTENT"
 
     # Generate reference file for both claude-plugins and skills projections
-    claude_output="claude-plugins/amazon-location/skills/amazon-location-service/references/$entry_name.md"
+    claude_output="claude-plugins/amazon-location-service/skills/amazon-location-service/references/$entry_name.md"
     skills_output="skills/amazon-location-service/references/$entry_name.md"
 
     # Check if there's a markdown file with the content (new approach)
@@ -84,7 +84,7 @@ export SKILL_REFERENCES_LIST
 
 # Expand the amazon-location skill for both projections
 template="src/templates/claude/skills/amazon-location-service/SKILL.md"
-claude_output="claude-plugins/amazon-location/skills/amazon-location-service/SKILL.md"
+claude_output="claude-plugins/amazon-location-service/skills/amazon-location-service/SKILL.md"
 skills_output="skills/amazon-location-service/SKILL.md"
 eval "cat <<TEMPLATE_EOF
 $(cat "$template")

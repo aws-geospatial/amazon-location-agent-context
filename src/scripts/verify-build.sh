@@ -74,10 +74,10 @@ echo "## Checking output directories..."
 echo ""
 check_directory "context" 1
 check_directory "context/additional" 1
-check_directory "kiro-powers/amazon-location" 1
-check_directory "kiro-powers/amazon-location/steering" 1
-check_directory "claude-plugins/amazon-location" 1
-check_directory "claude-plugins/amazon-location/skills" 1
+check_directory "kiro-powers/amazon-location-service" 1
+check_directory "kiro-powers/amazon-location-service/steering" 1
+check_directory "claude-plugins/amazon-location-service" 1
+check_directory "claude-plugins/amazon-location-service/skills" 1
 check_directory ".claude-plugin" 1
 check_directory "skills/amazon-location-service" 1
 check_directory "skills/amazon-location-service/references" 1
@@ -86,10 +86,10 @@ echo ""
 echo "## Checking required files..."
 echo ""
 check_file "context/amazon-location.md"
-check_file "kiro-powers/amazon-location/POWER.md"
-check_file "kiro-powers/amazon-location/mcp.json"
-check_file "claude-plugins/amazon-location/.claude-plugin/plugin.json"
-check_file "claude-plugins/amazon-location/.mcp.json"
+check_file "kiro-powers/amazon-location-service/POWER.md"
+check_file "kiro-powers/amazon-location-service/mcp.json"
+check_file "claude-plugins/amazon-location-service/.claude-plugin/plugin.json"
+check_file "claude-plugins/amazon-location-service/.mcp.json"
 check_file ".claude-plugin/marketplace.json"
 check_file "skills/amazon-location-service/SKILL.md"
 echo ""
@@ -152,8 +152,8 @@ check_directory_size() {
 }
 
 check_directory_size "context"
-check_directory_size "kiro-powers/amazon-location"
-check_directory_size "claude-plugins/amazon-location"
+check_directory_size "kiro-powers/amazon-location-service"
+check_directory_size "claude-plugins/amazon-location-service"
 check_directory_size "skills/amazon-location-service"
 echo ""
 
