@@ -63,6 +63,8 @@ Avoid these frequent errors:
 
 6. **Not handling nested Address objects correctly**: The Address object from GetPlace contains nested objects (`Region.Code`, `Region.Name`, `Country.Code2`, etc.), not flat strings. Access nested properties correctly.
 
+7. **Wrong action names in API Key permissions**: API key `AllowActions` use `geo-maps:`, `geo-places:`, `geo-routes:` prefixes (e.g., `geo-places:Geocode`, `geo-routes:CalculateRoutes`). Do NOT use SDK client names (`@aws-sdk/client-geo-places`) or IAM-style actions. See the Authentication and Permissions section for the complete list.
+
 ## API Selection Guidance
 
 Choose the right API for your use case:
@@ -151,6 +153,18 @@ When discussing permissions for Amazon Location Places, Maps and Routes services
 - Useful for web and mobile applications
 - Supports both resource-based and resourceless operations
 - Enables faster subsequent map loads through CDN caching
+
+**API Key Action Names** - API keys use their own action naming convention. Do NOT use SDK client names or IAM action names — they will be rejected.
+
+Resourceless API key actions (recommended):
+
+| Service | AllowActions | AllowResources |
+|---|---|---|
+| Maps | `geo-maps:GetTile`, `geo-maps:GetStaticMap` | `arn:aws:geo-maps:REGION::provider/default` |
+| Places | `geo-places:Autocomplete`, `geo-places:Geocode`, `geo-places:ReverseGeocode`, `geo-places:SearchText`, `geo-places:SearchNearby`, `geo-places:Suggest`, `geo-places:GetPlace` | `arn:aws:geo-places:REGION::provider/default` |
+| Routes | `geo-routes:CalculateRoutes`, `geo-routes:CalculateRouteMatrix`, `geo-routes:CalculateIsolines`, `geo-routes:OptimizeWaypoints`, `geo-routes:SnapToRoads` | `arn:aws:geo-routes:REGION::provider/default` |
+
+Do NOT use legacy `geo:` prefixed actions (e.g., `geo:GetMap*`, `geo:CalculateRoute`) — these are for pre-created resources only and will not work with resourceless APIs.
 
 ## MCP Server Integration
 
