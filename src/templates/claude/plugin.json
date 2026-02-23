@@ -17,5 +17,7 @@
     "maplibre",
     "address",
     "coordinates"
-  ]
+  ],
+  "repository": "https://github.com/awslabs/agent-plugins",
+  "license": "MIT-0"
 }

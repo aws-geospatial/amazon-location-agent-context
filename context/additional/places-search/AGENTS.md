@@ -112,7 +112,8 @@ async function searchPlaces(query) {
       console.log(place.Title); // "Starbucks"
       console.log(place.Address?.Label); // "123 Main St, Austin, TX"
       console.log(place.Position); // [lon, lat]
-      console.log(place.Categories); // ["Coffee Shop"]
+      // Categories are objects: { Id: string, Name: string, LocalizedName?: string, Primary?: boolean }
+      console.log(place.Categories); // [{ Id: "9000", Name: "Coffee Shop" }, { Id: "5814", Name: "Café" }]
       console.log(place.PlaceId); // For fetching details
     });
 
@@ -372,7 +373,8 @@ function parsePlaceResult(place) {
       lat: place.Position[1],
       lon: place.Position[0],
     },
-    categories: place.Categories || [],
+    categories: (place.Categories || []).map((c) => c.Name), // Category is { Id, Name, LocalizedName?, Primary? }
+    primaryCategory: place.Categories?.find((c) => c.Primary)?.Name,
     distance: place.Distance, // Only in SearchNearby results
 
     // Optional fields - check before using
