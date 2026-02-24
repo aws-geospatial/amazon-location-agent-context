@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-See [DEVELOPING.md](DEVELOPING.md) for full architecture, build system, and contribution details.
+See [AGENTS.md](AGENTS.md) for full architecture, build system, and contribution details.
 
 ## Quick Reference
 

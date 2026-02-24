@@ -17,6 +17,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check markdown formatting
+        run: npx prettier --check "src/content/**/*.md"
+
       - name: Run build
         run: ./src/scripts/build.sh
 
