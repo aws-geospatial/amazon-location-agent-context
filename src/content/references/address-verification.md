@@ -1,4 +1,4 @@
->**Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
+> **Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
 Validate and standardize addresses before persisting to databases or taking actions.
 
@@ -45,13 +45,15 @@ Do NOT verify on every keystroke (use Autocomplete for that - see address-input 
 
 ```javascript
 const authHelper = amazonLocationClient.withAPIKey(API_KEY, REGION);
-const client = new amazonLocationClient.GeoPlacesClient(authHelper.getClientConfig());
+const client = new amazonLocationClient.GeoPlacesClient(
+  authHelper.getClientConfig(),
+);
 
 async function verifyAddress(addressString) {
   try {
     const command = new amazonLocationClient.places.GeocodeCommand({
       QueryText: addressString,
-      MaxResults: 5  // Get multiple matches to detect ambiguity
+      MaxResults: 5, // Get multiple matches to detect ambiguity
     });
 
     const response = await client.send(command);
@@ -59,16 +61,18 @@ async function verifyAddress(addressString) {
     if (response.ResultItems.length === 0) {
       return {
         valid: false,
-        reason: 'ADDRESS_NOT_FOUND',
-        message: 'Address not found in postal database'
+        reason: "ADDRESS_NOT_FOUND",
+        message: "Address not found in postal database",
       };
     }
 
     const topResult = response.ResultItems[0];
 
     // Check for ambiguous input (multiple strong matches)
-    const isAmbiguous = response.ResultItems.length > 1 &&
-      response.ResultItems[1].Address.Label.toLowerCase() !== topResult.Address.Label.toLowerCase();
+    const isAmbiguous =
+      response.ResultItems.length > 1 &&
+      response.ResultItems[1].Address.Label.toLowerCase() !==
+        topResult.Address.Label.toLowerCase();
 
     return {
       valid: true,
@@ -76,18 +80,17 @@ async function verifyAddress(addressString) {
       standardized: topResult.Address,
       coordinates: {
         lat: topResult.Position[1],
-        lon: topResult.Position[0]
+        lon: topResult.Position[0],
       },
       originalInput: addressString,
-      allMatches: response.ResultItems
+      allMatches: response.ResultItems,
     };
-
   } catch (error) {
-    console.error('Verification error:', error);
+    console.error("Verification error:", error);
     return {
       valid: false,
-      reason: 'VERIFICATION_ERROR',
-      message: error.message
+      reason: "VERIFICATION_ERROR",
+      message: error.message,
     };
   }
 }
@@ -96,10 +99,10 @@ async function verifyAddress(addressString) {
 const result = await verifyAddress("500 E 4th St, Austin, TX 78701");
 
 if (result.valid) {
-  console.log('Valid address:', result.standardized.Label);
-  console.log('Coordinates:', result.coordinates);
+  console.log("Valid address:", result.standardized.Label);
+  console.log("Coordinates:", result.coordinates);
 } else {
-  console.log('Invalid:', result.message);
+  console.log("Invalid:", result.message);
 }
 ```
 
@@ -114,10 +117,10 @@ async function verifyStructuredAddress(fields) {
     fields.city,
     fields.state,
     fields.postalCode,
-    fields.country
+    fields.country,
   ].filter(Boolean);
 
-  const addressString = parts.join(', ');
+  const addressString = parts.join(", ");
 
   return await verifyAddress(addressString);
 }
@@ -128,7 +131,7 @@ const formData = {
   city: "Austin",
   state: "CA",
   postalCode: "94043",
-  country: "USA"
+  country: "USA",
 };
 
 const verification = await verifyStructuredAddress(formData);
@@ -154,7 +157,7 @@ if (result.valid && !result.ambiguous) {
     latitude: result.coordinates.lat,
     longitude: result.coordinates.lon,
     verified: true,
-    verifiedAt: new Date().toISOString()
+    verifiedAt: new Date().toISOString(),
   });
 }
 ```
@@ -162,30 +165,30 @@ if (result.valid && !result.ambiguous) {
 ### Address Not Found
 
 ```javascript
-if (!result.valid && result.reason === 'ADDRESS_NOT_FOUND') {
+if (!result.valid && result.reason === "ADDRESS_NOT_FOUND") {
   // Show error to user
   showError(
-    'We could not verify this address. Please check for typos and try again.'
+    "We could not verify this address. Please check for typos and try again.",
   );
 
   // Offer suggestions
   if (result.originalInput.length > 10) {
     // Suggest using autocomplete
     showSuggestion(
-      'Try using the address autocomplete field for better results.'
+      "Try using the address autocomplete field for better results.",
     );
   }
 
   // Still allow submission if user insists
   showOption(
-    'Submit anyway (address will be marked as unverified)',
+    "Submit anyway (address will be marked as unverified)",
     async () => {
       await saveAddress({
         original: result.originalInput,
         verified: false,
-        verifiedAt: null
+        verifiedAt: null,
       });
-    }
+    },
   );
 }
 ```
@@ -196,23 +199,23 @@ if (!result.valid && result.reason === 'ADDRESS_NOT_FOUND') {
 if (result.valid && result.ambiguous) {
   // Present user with options
   showAmbiguityDialog(
-    'We found multiple matches for this address. Please select the correct one:',
-    result.allMatches.map(match => ({
+    "We found multiple matches for this address. Please select the correct one:",
+    result.allMatches.map((match) => ({
       label: match.Address.Label,
       details: {
         locality: match.Address.Locality,
         region: match.Address.Region?.Name,
-        postalCode: match.Address.PostalCode
+        postalCode: match.Address.PostalCode,
       },
       onSelect: async () => {
         await saveAddress({
           standardized: match.Address.Label,
           latitude: match.Position[1],
           longitude: match.Position[0],
-          verified: true
+          verified: true,
         });
-      }
-    }))
+      },
+    })),
   );
 }
 ```
@@ -228,12 +231,12 @@ if (result.valid) {
   if (inputNormalized !== standardizedNormalized) {
     // Show user the standardized version
     const confirmed = await confirmDialog(
-      'We found a slight difference in the address:',
+      "We found a slight difference in the address:",
       {
         original: result.originalInput,
         standardized: result.standardized.Label,
-        question: 'Use the standardized version?'
-      }
+        question: "Use the standardized version?",
+      },
     );
 
     if (confirmed) {
@@ -241,7 +244,7 @@ if (result.valid) {
       await saveAddress({
         standardized: result.standardized.Label,
         ...result.coordinates,
-        verified: true
+        verified: true,
       });
     } else {
       // Keep original but mark as manually confirmed
@@ -249,7 +252,7 @@ if (result.valid) {
         original: result.originalInput,
         ...result.coordinates,
         verified: true,
-        manuallyConfirmed: true
+        manuallyConfirmed: true,
       });
     }
   }
@@ -264,17 +267,17 @@ if (result.valid) {
 // Validate form before submission
 async function validateAddressForm(formElement) {
   const submitButton = formElement.querySelector('button[type="submit"]');
-  const statusDiv = document.getElementById('validation-status');
+  const statusDiv = document.getElementById("validation-status");
 
-  formElement.addEventListener('submit', async (e) => {
+  formElement.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     // Show loading state
     submitButton.disabled = true;
-    statusDiv.innerHTML = 'Verifying address...';
+    statusDiv.innerHTML = "Verifying address...";
 
     // Get address from form
-    const addressInput = formElement.querySelector('#address').value;
+    const addressInput = formElement.querySelector("#address").value;
 
     try {
       const result = await verifyAddress(addressInput);
@@ -293,7 +296,8 @@ async function validateAddressForm(formElement) {
       }
 
       if (result.ambiguous) {
-        statusDiv.innerHTML = '<div class="warning">Multiple matches found. Please select:</div>';
+        statusDiv.innerHTML =
+          '<div class="warning">Multiple matches found. Please select:</div>';
         showAmbiguityOptions(result.allMatches);
         submitButton.disabled = false;
         return;
@@ -302,25 +306,25 @@ async function validateAddressForm(formElement) {
       // Update form with standardized address
       if (result.standardized.Label !== addressInput) {
         const useStandardized = confirm(
-          `Use standardized address?\n\nYou entered:\n${addressInput}\n\nStandardized:\n${result.standardized.Label}`
+          `Use standardized address?\n\nYou entered:\n${addressInput}\n\nStandardized:\n${result.standardized.Label}`,
         );
 
         if (useStandardized) {
-          formElement.querySelector('#address').value = result.standardized.Label;
+          formElement.querySelector("#address").value =
+            result.standardized.Label;
         }
       }
 
       // Store coordinates in hidden fields
-      formElement.querySelector('#latitude').value = result.coordinates.lat;
-      formElement.querySelector('#longitude').value = result.coordinates.lon;
+      formElement.querySelector("#latitude").value = result.coordinates.lat;
+      formElement.querySelector("#longitude").value = result.coordinates.lon;
 
       // Mark as verified
-      formElement.querySelector('#verified').value = 'true';
+      formElement.querySelector("#verified").value = "true";
 
       // Submit form
       statusDiv.innerHTML = '<div class="success">Address verified!</div>';
       formElement.submit();
-
     } catch (error) {
       statusDiv.innerHTML = `
         <div class="error">
@@ -351,18 +355,17 @@ async function batchVerifyAddresses(addresses) {
         standardized: result.valid ? result.standardized.Label : null,
         coordinates: result.valid ? result.coordinates : null,
         ambiguous: result.ambiguous,
-        error: result.valid ? null : result.message
+        error: result.valid ? null : result.message,
       });
 
       // Rate limiting - wait between requests
-      await new Promise(resolve => setTimeout(resolve, 100));
-
+      await new Promise((resolve) => setTimeout(resolve, 100));
     } catch (error) {
       results.push({
         id: address.id,
         originalAddress: address.text,
         verified: false,
-        error: error.message
+        error: error.message,
       });
     }
 
@@ -377,17 +380,17 @@ async function batchVerifyAddresses(addresses) {
 function generateVerificationReport(results) {
   const stats = {
     total: results.length,
-    verified: results.filter(r => r.verified && !r.ambiguous).length,
-    ambiguous: results.filter(r => r.ambiguous).length,
-    invalid: results.filter(r => !r.verified).length,
-    errors: results.filter(r => r.error).length
+    verified: results.filter((r) => r.verified && !r.ambiguous).length,
+    ambiguous: results.filter((r) => r.ambiguous).length,
+    invalid: results.filter((r) => !r.verified).length,
+    errors: results.filter((r) => r.error).length,
   };
 
-  console.log('Verification Report:', stats);
+  console.log("Verification Report:", stats);
 
   return {
     stats,
-    needsReview: results.filter(r => !r.verified || r.ambiguous)
+    needsReview: results.filter((r) => !r.verified || r.ambiguous),
   };
 }
 
@@ -411,6 +414,7 @@ const report = generateVerificationReport(verificationResults);
 Amazon Location Places API has different pricing based on the `IntendedUse` parameter:
 
 **Stored Pricing** (`IntendedUse: "Storage"`):
+
 - ✅ Can store results indefinitely
 - ✅ Supports all features (Label, Core, Advanced)
 - ✅ Price cap - maximum cost per API call
@@ -418,6 +422,7 @@ Amazon Location Places API has different pricing based on the `IntendedUse` para
 - **Use when**: Building applications that cache results long-term or perform analysis on historical data
 
 **Other Pricing Tiers**:
+
 - ⚠️ Label & Core: Results cannot be stored permanently
 - ⚠️ Advanced: Results can be cached temporarily but not stored indefinitely
 - 💰 Lower per-request cost
@@ -429,14 +434,15 @@ Amazon Location Places API has different pricing based on the `IntendedUse` para
 // To enable stored pricing (allows indefinite storage)
 const command = new amazonLocationClient.places.GeocodeCommand({
   QueryText: addressString,
-  IntendedUse: "Storage",  // Required for long-term storage
-  MaxResults: 1
+  IntendedUse: "Storage", // Required for long-term storage
+  MaxResults: 1,
 });
 ```
 
 ### Storage Decision Guide
 
 Ask yourself:
+
 1. **Do you need to store results indefinitely?**
    - YES → Use `IntendedUse: "Storage"` and pay stored pricing
    - NO → Use default pricing, don't store permanently
@@ -463,46 +469,45 @@ async function verifyAddressWithDetailedErrors(addressString) {
       if (addressString.length < 10) {
         return {
           valid: false,
-          errorCode: 'TOO_SHORT',
-          message: 'Address is too short. Please provide a complete address.',
-          suggestion: 'Include street, city, and state/postal code.'
+          errorCode: "TOO_SHORT",
+          message: "Address is too short. Please provide a complete address.",
+          suggestion: "Include street, city, and state/postal code.",
         };
       }
 
       if (!/\d/.test(addressString)) {
         return {
           valid: false,
-          errorCode: 'MISSING_NUMBER',
-          message: 'Address appears to be missing a street number.',
-          suggestion: 'Add the building or house number.'
+          errorCode: "MISSING_NUMBER",
+          message: "Address appears to be missing a street number.",
+          suggestion: "Add the building or house number.",
         };
       }
 
       if (!/[A-Z]{2}/.test(addressString.toUpperCase())) {
         return {
           valid: false,
-          errorCode: 'MISSING_STATE',
-          message: 'Please include the state or province.',
-          suggestion: 'Add the 2-letter state code (e.g., CA, NY).'
+          errorCode: "MISSING_STATE",
+          message: "Please include the state or province.",
+          suggestion: "Add the 2-letter state code (e.g., CA, NY).",
         };
       }
 
       return {
         valid: false,
-        errorCode: 'NOT_FOUND',
-        message: 'Address not found in postal database.',
-        suggestion: 'Check for typos or try entering in a different format.'
+        errorCode: "NOT_FOUND",
+        message: "Address not found in postal database.",
+        suggestion: "Check for typos or try entering in a different format.",
       };
     }
 
     return result;
-
   } catch (error) {
     return {
       valid: false,
-      errorCode: 'VERIFICATION_FAILED',
-      message: 'Unable to verify address due to technical error.',
-      technicalError: error.message
+      errorCode: "VERIFICATION_FAILED",
+      message: "Unable to verify address due to technical error.",
+      technicalError: error.message,
     };
   }
 }
@@ -511,24 +516,28 @@ async function verifyAddressWithDetailedErrors(addressString) {
 ## Best Practices
 
 ### When to Verify
+
 - **Always verify before storage**: Prevent bad data from entering database
 - **Verify before critical actions**: Shipping, delivery, routing
 - **Don't verify on every keystroke**: Use autocomplete during input, geocode at submission
 - **Batch verification**: For data imports, verify in batches with rate limiting
 
 ### Data Quality
+
 - **Understand pricing implications**: Review stored pricing before implementing long-term storage
 - **Use IntendedUse parameter**: Set `IntendedUse: "Storage"` if storing results indefinitely
 - **Consider caching vs storage**: Temporary session caching doesn't require stored pricing
 - **Handle missing components**: Not all addresses have all fields (street number, etc.)
 
 ### User Experience
+
 - **Show what changed**: When standardizing, show user the difference
 - **Allow manual override**: Let users keep their version if they insist
 - **Handle ambiguity gracefully**: Present options, don't guess
 - **Provide helpful errors**: Explain WHY address is invalid and how to fix
 
 ### Performance
+
 - **Cache results**: Cache verification results temporarily within your session
 - **Rate limit batch jobs**: Wait 100ms between batch verifications
 - **Verify once per session**: Don't re-verify address user already confirmed

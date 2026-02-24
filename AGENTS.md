@@ -87,7 +87,7 @@ This document covers the build system, content structure, and how to contribute 
 │       └── evaluate-context-size.sh
 │
 ├── README.md
-├── DEVELOPING.md
+├── AGENTS.md
 └── ...
 ```
 

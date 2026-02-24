@@ -10,8 +10,9 @@
   "plugins": [
     {
       "name": "amazon-location-service",
-      "source": "./claude-plugins/amazon-location-service",
-      "description": "Skills and MCP tools for Amazon Location Service",
+      "source": "./plugins/amazon-location-service",
+      "category": "location",
+      "description": "Guide developers through adding maps, places search, geocoding, routing, and other geospatial features with Amazon Location Service, including authentication setup, SDK integration, and best practices.",
       "keywords": [
         "location",
         "maps",
@@ -24,7 +25,9 @@
         "maplibre",
         "address",
         "coordinates"
-      ]
+      ],
+      "tags": ["aws", "location", "maps", "geospatial"],
+      "version": "1.0.0"
     }
   ]
 }
