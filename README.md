@@ -18,7 +18,7 @@ Install as a Power:
 
 Activate by keywords: Mention "location", "maps", "geocoding", "routing", "places", "geofencing", or "tracking" in your prompts.
 
-> **Note:** When using [Spec](https://kiro.dev/docs/specs/) mode, you'll need to mention the Amazon Location Service power in your prompt for Kiro to activate it.
+> **Note:** When using [Spec](https://kiro.dev/docs/specs/) mode, include "use the Amazon Location Service power" in your spec prompt for Kiro to activate it.
 
 ### For Claude Code and Cursor Users
 
