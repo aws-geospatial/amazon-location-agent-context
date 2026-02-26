@@ -10,15 +10,31 @@ This package guides AI coding assistants through adding maps, places search, geo
 
 ### For Kiro Users
 
-Install as a Power:
+**Kiro IDE** — Install as a Power:
 
 [![Install in Kiro](https://img.shields.io/badge/Install_in_Kiro-232F3E?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDIwIDI0IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMy44MDA4MSAxOC41NjYxQzEuMzIzMDYgMjQuMDU3MiA2LjU5OTA0IDI1LjQzNCAxMC40OTA0IDIyLjIyMDVDMTEuNjMzOSAyNS44MjQyIDE1LjkyNiAyMy4xMzYxIDE3LjQ2NTIgMjAuMzQ0NUMyMC44NTc4IDE0LjE5MTUgMTkuNDg3NyA3LjkxNDU5IDE5LjEzNjEgNi42MTk4OEMxNi43MjQ0IC0yLjIwOTcyIDQuNjcwNTUgLTIuMjE4NTIgMi41OTU4MSA2LjY2NDlDMi4xMTEzNiA4LjIxOTQ2IDIuMTAyODQgOS45ODc1MiAxLjgyODQ2IDExLjgyMzNDMS42OTAxMSAxMi43NDkgMS41OTI1OCAxMy4zMzk4IDEuMjM0MzYgMTQuMzEzNUMxLjAyODQxIDE0Ljg3MzMgMC43NDUwNDMgMTUuMzcwNCAwLjI5OTgzMyAxNi4yMDgyQy0wLjM5MTU5NCAxNy41MDk1IC0wLjA5OTg4MDIgMjAuMDIxIDMuNDYzOTcgMTguNzE4NlYxOC43MTk1TDMuODAwODEgMTguNTY2MVoiIGZpbGw9IndoaXRlIj48L3BhdGg+PHBhdGggZD0iTTEwLjk2MTQgMTAuNDQxM0M5Ljk3MjAyIDEwLjQ0MTMgOS44MjQyMiA5LjI1ODkzIDkuODI0MjIgOC41NTQwN0M5LjgyNDIyIDcuOTE3OTEgOS45MzgyNCA3LjQxMjQgMTAuMTU0MiA3LjA5MTk3QzEwLjM0NDEgNi44MTAwMyAxMC42MTU4IDYuNjY2OTkgMTAuOTYxNCA2LjY2Njk5QzExLjMwNzEgNi42NjY5OSAxMS42MDM2IDYuODEyMjggMTEuODEyOCA3LjA5ODkyQzEyLjA1MTEgNy40MjU1NCAxMi4xNzcgNy45Mjg2MSAxMi4xNzcgOC41NTQwN0MxMi4xNzcgOS43MzU5MSAxMS43MjI2IDEwLjQ0MTMgMTAuOTYxNiAxMC40NDEzSDEwLjk2MTRaIiBmaWxsPSJibGFjayI+PC9wYXRoPjxwYXRoIGQ9Ik0xNS4wMzE4IDEwLjQ0MTNDMTQuMDQyMyAxMC40NDEzIDEzLjg5NDUgOS4yNTg5MyAxMy44OTQ1IDguNTU0MDdDMTMuODk0NSA3LjkxNzkxIDE0LjAwODYgNy40MTI0IDE0LjIyNDUgNy4wOTE5N0MxNC40MTQ0IDYuODEwMDMgMTQuNjg2MSA2LjY2Njk5IDE1LjAzMTggNi42NjY5OUMxNS4zNzc0IDYuNjY2OTkgMTUuNjczOSA2LjgxMjI4IDE1Ljg4MzEgNy4wOTg5MkMxNi4xMjE0IDcuNDI1NTQgMTYuMjQ3NCA3LjkyODYxIDE2LjI0NzQgOC41NTQwN0MxNi4yNDc0IDkuNzM1OTEgMTUuNzkzIDEwLjQ0MTMgMTUuMDMxOSAxMC40NDEzSDE1LjAzMThaIiBmaWxsPSJibGFjayI+PC9wYXRoPjwvc3ZnPg==)](https://kiro.dev/launch/powers/amazon-location-service)
 
 > **Alternatively**, open Kiro IDE → `Powers` panel → `Available` tab → search for "Build geospatial applications with Amazon Location Service"
 
-Activate by keywords: Mention "location", "maps", "geocoding", "routing", "places", "geofencing", or "tracking" in your prompts.
-
 > **Note:** When using [Spec](https://kiro.dev/docs/specs/) mode, include "use the Amazon Location Service power" in your spec prompt for Kiro to activate it.
+
+**Kiro CLI** — Install as an [Agent Skill](https://agentskills.io):
+
+```bash
+npx skills add aws-geospatial/amazon-location-agent-context -a kiro-cli
+```
+
+After installing, add the skill to your custom agent's resources in `.kiro/agents/<agent>.json`:
+
+```json
+{
+  "resources": ["skill://.kiro/skills/**/SKILL.md"]
+}
+```
+
+> **Note:** Kiro CLI skill installations don't include MCP configuration automatically. See [MCP Servers](#mcp-servers) below for manual setup.
+
+Activate by keywords: Mention "location", "maps", "geocoding", "routing", "places", "geofencing", or "tracking" in your prompts.
 
 ### For Claude Code and Cursor Users
 
@@ -26,11 +42,15 @@ Install as a Plugin from the [Agent Plugins for AWS](https://github.com/awslabs/
 
 **Claude Code:**
 
-```bash
-# Add the marketplace
-/plugin marketplace add awslabs/agent-plugins
+#### Add the marketplace
 
-# Install the plugin
+```bash
+/plugin marketplace add awslabs/agent-plugins
+```
+
+#### Install the plugin
+
+```bash
 /plugin install amazon-location-service@agent-plugins-for-aws
 ```
 
@@ -77,14 +97,21 @@ $ npx skills add aws-geospatial/amazon-location-agent-context
 
 **Install for a specific agent:**
 
+#### VS Code (GitHub Copilot)
+
 ```bash
-# VS Code (GitHub Copilot)
 npx skills add aws-geospatial/amazon-location-agent-context -a vscode
+```
 
-# OpenCode
+#### OpenCode
+
+```bash
 npx skills add aws-geospatial/amazon-location-agent-context -a opencode
+```
 
-# Codex
+#### Codex
+
+```bash
 npx skills add aws-geospatial/amazon-location-agent-context -a codex
 ```
 
