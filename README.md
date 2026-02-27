@@ -69,7 +69,7 @@ You can install the **amazon-location-service** plugin from the [Cursor Marketpl
 
 For Claude Code and Cursor users, we recommend the [plugin above](#for-claude-code-and-cursor-users) for the best experience (includes MCP configuration). For all other agents that support the [Agent Skills](https://agentskills.io) standard:
 
-The `skills/amazon-location-service/` directory is an [Agent Skills](https://agentskills.io) package — an open standard for giving agents new capabilities. Agent Skills are supported by VS Code (GitHub Copilot), OpenCode, Codex, Antigravity, and [more](https://github.com/vercel-labs/skills?tab=readme-ov-file#supported-agents).
+The `skills/amazon-location-service/` directory is an [Agent Skills](https://agentskills.io) package — an open standard for giving agents new capabilities. Agent Skills are supported by GitHub Copilot, OpenCode, Codex, Antigravity, and [more](https://github.com/vercel-labs/skills?tab=readme-ov-file#supported-agents).
 
 **Install with the skills CLI:**
 
@@ -85,7 +85,7 @@ $ npx skills add aws-geospatial/amazon-location-agent-context
 ? Select an agent: (Use arrow keys)
 ❯ Claude Code
   Cursor
-  VS Code (GitHub Copilot)
+  GitHub Copilot
   OpenCode
   Codex
   Antigravity
@@ -97,10 +97,10 @@ $ npx skills add aws-geospatial/amazon-location-agent-context
 
 **Install for a specific agent:**
 
-#### VS Code (GitHub Copilot)
+#### GitHub Copilot
 
 ```bash
-npx skills add aws-geospatial/amazon-location-agent-context -a vscode
+npx skills add aws-geospatial/amazon-location-agent-context -a github-copilot
 ```
 
 #### OpenCode
