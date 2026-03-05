@@ -6,7 +6,7 @@ See [AGENTS.md](AGENTS.md) for full architecture, build system, and contribution
 
 ## Quick Reference
 
-- All files in `context/`, `kiro-powers/`, `claude-plugins/`, `.claude-plugin/`, and `skills/` are **generated outputs** — never edit them directly. Source content lives in `src/`.
+- All files in `context/`, `kiro-powers/`, `plugins/`, `.claude-plugin/`, and `skills/` are **generated outputs** — never edit them directly. Source content lives in `src/`.
 - Build all projections: `./src/scripts/build.sh`
 - Verify build: `./src/scripts/verify-build.sh`
 - No external dependencies — pure bash with variable expansion.
