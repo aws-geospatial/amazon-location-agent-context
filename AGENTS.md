@@ -15,7 +15,7 @@ This document covers the build system, content structure, and how to contribute 
 │           ├── address-verification.md
 │           └── ...
 │
-├── claude-plugins/              # Claude Code Plugin (generated output)
+├── plugins/                     # Claude Code Plugin (generated output)
 │   └── amazon-location/
 │       ├── .claude-plugin/
 │       │   └── plugin.json
@@ -104,7 +104,7 @@ The build system uses shell variable expansion to generate projections from sour
 # Build specific projection
 ./src/scripts/build-base.sh    # Generates context/
 ./src/scripts/build-kiro.sh    # Generates kiro-powers/amazon-location/
-./src/scripts/build-claude.sh  # Generates claude-plugins/amazon-location/, .claude-plugin/, and skills/amazon-location-service/
+./src/scripts/build-claude.sh  # Generates plugins/amazon-location/, .claude-plugin/, and skills/amazon-location-service/
 ```
 
 ### Build Process
@@ -119,7 +119,7 @@ Output:
 
 - `context/` - Base context projection
 - `kiro-powers/amazon-location/` - Kiro Power projection
-- `claude-plugins/amazon-location/` - Claude Code Plugin projection
+- `plugins/amazon-location/` - Claude Code Plugin projection
 - `skills/amazon-location-service/` - Agent Skills projection
 - `.claude-plugin/` - Claude Code Marketplace manifest
 
@@ -192,7 +192,7 @@ The build automatically generates:
 - `context/additional/my-feature/BRIEF.md`
 - `context/additional/my-feature/AGENTS.md`
 - `kiro-powers/amazon-location/steering/my-feature.md`
-- Content is added as a reference file in `claude-plugins/amazon-location/skills/amazon-location-service/references/my-feature.md`
+- Content is added as a reference file in `plugins/amazon-location/skills/amazon-location-service/references/my-feature.md`
 
 ### Add New Projection Type
 
@@ -232,7 +232,32 @@ To test the Claude Code plugin locally while developing:
 Alternatively, you can test the plugin directly without the marketplace:
 
 ```bash
-claude --plugin-dir ./claude-plugins/amazon-location
+claude --plugin-dir ./plugins/amazon-location
 ```
 
 After making changes, rebuild and restart Claude Code to pick up updates.
+
+## Releasing
+
+This project uses [Semantic Versioning](https://semver.org/) with GitHub tags and releases. The version in the template files (`plugin.json`, `marketplace.json`) is the source of truth.
+
+### Release Process
+
+1. Update `CHANGELOG.md` — move items from `[Unreleased]` to a new version heading
+2. Update the version in these template files:
+   - `src/templates/claude/plugin.json` (`version` field)
+   - `src/templates/claude/marketplace.json` (both `metadata.version` and the plugin entry `version`)
+   - `src/templates/claude/skills/amazon-location-service/SKILL.md` (`metadata.version` in frontmatter) — note: the Agent Skills spec uses `MAJOR.MINOR` format (e.g., `"1.0"`) rather than full semver, so only update the major and minor components here
+3. Run the build: `./src/scripts/build.sh`
+4. Run verification: `./src/scripts/verify-build.sh`
+5. Commit everything (source changes, built output, changelog)
+6. Create a Git tag: `git tag v<version>` (e.g., `git tag v1.1.0`)
+7. Push with tags: `git push origin main --tags`
+8. Create a GitHub Release from the tag, using the changelog entry as the release notes
+9. Update the Claude Code plugin in the [agent-plugins](https://github.com/awslabs/agent-plugins) marketplace — the Kiro power and Agent Skills projection are published directly from this repo, but the Claude Code plugin is distributed through that separate marketplace repo. Copy the built `plugins/amazon-location-service/` output there and open a PR.
+
+### Version Bumping Guide
+
+- Patch (`1.0.x`): Typo fixes, minor wording improvements, no new content
+- Minor (`1.x.0`): New additional entries, expanded guidance, new projection types
+- Major (`x.0.0`): Breaking changes to context structure, removed content, renamed projections

@@ -47,8 +47,8 @@ evaluate_output() {
 }
 
 # Evaluate all outputs
-evaluate_output "kiro-powers/amazon-location" "kiro-powers/amazon-location"
-evaluate_output "claude-plugins/amazon-location" "claude-plugins/amazon-location"
+evaluate_output "kiro-powers/amazon-location-service" "kiro-powers/amazon-location-service"
+evaluate_output "plugins/amazon-location-service" "plugins/amazon-location-service"
 evaluate_output "skills/amazon-location-service" "skills/amazon-location-service"
 evaluate_output "context" "context"
 
