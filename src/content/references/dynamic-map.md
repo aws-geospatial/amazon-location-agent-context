@@ -7,6 +7,7 @@ Render interactive maps using MapLibre GL JS with Amazon Location Service.
 - [Basic Setup](#basic-setup)
 - [Complete Examples](#complete-examples)
 - [Map Styles](#map-styles)
+- [MapLibre Gotchas](#maplibre-gotchas)
 - [Advanced Features](#advanced-features)
 - [Error Handling](#error-handling)
 - [Best Practices](#best-practices)
@@ -233,6 +234,44 @@ function setMapStyle(styleName) {
     }
   });
 }
+```
+
+## MapLibre Gotchas
+
+### `map.loaded()` vs the `"load"` event
+
+These are **not the same thing** and confusing them causes hangs:
+
+- **`"load"` event** — fires once when the map **style** is initially loaded. Sources and layers can be added after this.
+- **`map.loaded()`** — returns `true` only when **all tiles, images, and resources** have been fetched. This can remain `false` well after `"load"` fires.
+
+**Do NOT do this** — it will hang if `"load"` already fired but tiles are still loading:
+```javascript
+// BUG: map.loaded() is false, but "load" already fired → hangs forever
+if (!map.loaded()) {
+  await new Promise((resolve) => map.on("load", resolve));
+}
+```
+
+**Correct patterns:**
+- To wait for the style before adding sources/layers: `map.on("load", callback)` or `map.once("load", callback)`
+- To check if the style is ready synchronously: `map.isStyleLoaded()`
+- Markers (DOM-based) can be added at any time — they do not need `"load"` to fire
+
+### Draggable Markers
+
+Use MapLibre's **default marker** with `draggable: true` for reliable drag behavior. Custom HTML element markers (`{ element: el, draggable: true }`) do not handle drag events reliably in MapLibre v5.
+
+```javascript
+// Reliable — default marker with drag
+const marker = new maplibregl.Marker({ color: "#3b82f6", draggable: true })
+  .setLngLat([-122.34, 47.62])
+  .addTo(map);
+
+marker.on("dragend", () => {
+  const lngLat = marker.getLngLat();
+  console.log("Dropped at:", lngLat.lng, lngLat.lat);
+});
 ```
 
 ## Advanced Features

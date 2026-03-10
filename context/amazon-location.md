@@ -199,6 +199,31 @@ Resourceless API key actions (recommended):
 
 Do NOT use legacy `geo:` prefixed actions (e.g., `geo:GetMap*`, `geo:CalculateRoute`) — these are for pre-created resources only and will not work with resourceless APIs.
 
+### LocationClient Setup
+
+Geofencing and Tracking use `LocationClient` (`@aws-sdk/client-location`). These are **resource-based operations** — you MUST create resources (trackers, geofence collections) before using them.
+
+```javascript
+import { LocationClient } from "@aws-sdk/client-location";
+
+// Server-side: uses IAM credentials from environment/role
+const client = new LocationClient({ region: "us-east-1" });
+```
+
+```javascript
+// Client-side: uses Amazon Cognito
+import { LocationClient } from "@aws-sdk/client-location";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+
+const client = new LocationClient({
+  region: "us-east-1",
+  credentials: fromCognitoIdentityPool({
+    identityPoolId: "us-east-1:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    clientConfig: { region: "us-east-1" },
+  }),
+});
+```
+
 ## MCP Server Integration
 
 Integrates with the [AWS MCP Server](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-aws-mcp-server.html) (Apache-2.0 license) which provides access to AWS documentation, API references, and direct API interactions. See the [Getting Started Guide](https://docs.aws.amazon.com/aws-mcp/latest/userguide/getting-started-aws-mcp-server.html) for setup and credential configuration. To use a non-default region, add `"--metadata", "AWS_REGION=<your-region>"` to your MCP config args.

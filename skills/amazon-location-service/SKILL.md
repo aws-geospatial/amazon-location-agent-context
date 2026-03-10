@@ -183,6 +183,31 @@ Resourceless API key actions (recommended):
 
 Do NOT use legacy `geo:` prefixed actions (e.g., `geo:GetMap*`, `geo:CalculateRoute`) — these are for pre-created resources only and will not work with resourceless APIs.
 
+### LocationClient Setup
+
+Geofencing and Tracking use `LocationClient` (`@aws-sdk/client-location`). These are **resource-based operations** — you MUST create resources (trackers, geofence collections) before using them.
+
+```javascript
+import { LocationClient } from "@aws-sdk/client-location";
+
+// Server-side: uses IAM credentials from environment/role
+const client = new LocationClient({ region: "us-east-1" });
+```
+
+```javascript
+// Client-side: uses Amazon Cognito
+import { LocationClient } from "@aws-sdk/client-location";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+
+const client = new LocationClient({
+  region: "us-east-1",
+  credentials: fromCognitoIdentityPool({
+    identityPoolId: "us-east-1:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    clientConfig: { region: "us-east-1" },
+  }),
+});
+```
+
 ## MCP Server Integration
 
 Integrates with the [AWS MCP Server](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-aws-mcp-server.html) (Apache-2.0 license) which provides access to AWS documentation, API references, and direct API interactions. See the [Getting Started Guide](https://docs.aws.amazon.com/aws-mcp/latest/userguide/getting-started-aws-mcp-server.html) for setup and credential configuration. To use a non-default region, add `"--metadata", "AWS_REGION=<your-region>"` to your MCP config args.
@@ -200,7 +225,9 @@ Load these resources as needed for specific implementation guidance:
 - [Address Input](./references/address-input.md) - Create effective address input forms for users with address type ahead completion improving input speed and accuracy
 - [Address Verification](./references/address-verification.md) - Validate addresses input from users before taking actions or persisting to databases
 - [Calculate Routes](./references/calculate-routes.md) - Calculate routes between locations with customizable travel options and display them on maps
+- [Device Tracking](./references/device-tracking.md) - Track device locations in real time and query position history
 - [Dynamic Map Rendering](./references/dynamic-map.md) - Render dynamic maps with MapLibre
 - [Places Search](./references/places-search.md) - Search for places or points of interest
 - [Web JavaScript](./references/web-javascript.md) - Integrate Amazon Location services into web browser applications
+- [Zone Alerts](./references/zone-alerts.md) - Monitor device positions against geographic boundaries and react to zone entry or exit
 
