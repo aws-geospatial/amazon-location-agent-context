@@ -259,6 +259,7 @@ if (!map.loaded()) {
 ```
 
 **Correct patterns:**
+
 - Do all source/layer work inside a single `map.on("load", async () => { ... })` callback — async work inside the callback is fine
 - If you need to wait for sources to settle after load, use `map.once("idle", callback)` which re-fires whenever everything is loaded and stable ([`map.ts#L3705`](https://github.com/maplibre/maplibre-gl-js/blob/main/src/ui/map.ts#L3705))
 - Markers (DOM-based) can be added at any time — they do not need `"load"` or `"idle"`

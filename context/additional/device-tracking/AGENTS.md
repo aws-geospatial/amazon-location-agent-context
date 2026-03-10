@@ -20,19 +20,21 @@ A tracker stores position updates for a collection of devices. Choose a position
 ```javascript
 import { CreateTrackerCommand } from "@aws-sdk/client-location";
 
-await client.send(new CreateTrackerCommand({
-  TrackerName: "my-fleet-tracker",
-  PositionFiltering: "AccuracyBased",  // or "DistanceBased" | "TimeBased"
-}));
+await client.send(
+  new CreateTrackerCommand({
+    TrackerName: "my-fleet-tracker",
+    PositionFiltering: "AccuracyBased", // or "DistanceBased" | "TimeBased"
+  }),
+);
 ```
 
 ### Position Filtering Modes
 
-| Mode | Behavior | Best For |
-|------|----------|----------|
-| **AccuracyBased** | Ignores updates where movement < measured accuracy. Example: accuracy of 5m and 10m → ignored if movement < 15m. | Devices that report accuracy (recommended) |
-| **DistanceBased** | Ignores updates where device moved < 30m. | Devices without accuracy data, reducing GPS jitter |
-| **TimeBased** (default) | Evaluates all updates against geofences but stores only one per 30 seconds per device. | High-frequency updates (>1 per 30 seconds) |
+| Mode                    | Behavior                                                                                                         | Best For                                           |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| **AccuracyBased**       | Ignores updates where movement < measured accuracy. Example: accuracy of 5m and 10m → ignored if movement < 15m. | Devices that report accuracy (recommended)         |
+| **DistanceBased**       | Ignores updates where device moved < 30m.                                                                        | Devices without accuracy data, reducing GPS jitter |
+| **TimeBased** (default) | Evaluates all updates against geofences but stores only one per 30 seconds per device.                           | High-frequency updates (>1 per 30 seconds)         |
 
 **IMPORTANT**: Filtering affects what gets **stored** and **evaluated against geofences**. AccuracyBased and DistanceBased filtering reduce both storage costs and geofence evaluation costs. TimeBased evaluates every update against geofences but limits storage.
 
@@ -43,28 +45,31 @@ Use `BatchUpdateDevicePosition` to send location data from devices. Each call ac
 ```javascript
 import { BatchUpdateDevicePositionCommand } from "@aws-sdk/client-location";
 
-await client.send(new BatchUpdateDevicePositionCommand({
-  TrackerName: "my-fleet-tracker",
-  Updates: [
-    {
-      DeviceId: "truck-01",
-      Position: [-122.3394, 47.6159],       // [longitude, latitude]
-      SampleTime: new Date().toISOString(),
-      Accuracy: { Horizontal: 10.0 },       // meters, optional but recommended
-      PositionProperties: {                  // up to 3 key-value pairs
-        VehicleType: "Truck",
-        DriverId: "D-1234",
+await client.send(
+  new BatchUpdateDevicePositionCommand({
+    TrackerName: "my-fleet-tracker",
+    Updates: [
+      {
+        DeviceId: "truck-01",
+        Position: [-122.3394, 47.6159], // [longitude, latitude]
+        SampleTime: new Date().toISOString(),
+        Accuracy: { Horizontal: 10.0 }, // meters, optional but recommended
+        PositionProperties: {
+          // up to 3 key-value pairs
+          VehicleType: "Truck",
+          DriverId: "D-1234",
+        },
       },
-    },
-    {
-      DeviceId: "truck-02",
-      Position: [-122.3510, 47.6205],
-      SampleTime: new Date().toISOString(),
-      Accuracy: { Horizontal: 8.0 },
-      PositionProperties: { VehicleType: "Van" },
-    },
-  ],
-}));
+      {
+        DeviceId: "truck-02",
+        Position: [-122.351, 47.6205],
+        SampleTime: new Date().toISOString(),
+        Accuracy: { Horizontal: 8.0 },
+        PositionProperties: { VehicleType: "Van" },
+      },
+    ],
+  }),
+);
 ```
 
 ### MQTT Ingestion (IoT Devices)
@@ -73,12 +78,12 @@ For IoT devices, position updates can be sent via MQTT through AWS IoT Core, avo
 
 ### Update Frequency Guidance
 
-| Scenario | Suggested Frequency | Filtering Mode |
-|----------|-------------------|----------------|
-| Real-time fleet dashboard | 5–15 seconds | TimeBased |
-| Delivery ETA tracking | 30–60 seconds | AccuracyBased |
-| Asset monitoring (low movement) | 1–5 minutes | DistanceBased |
-| Periodic check-in | 15–60 minutes | DistanceBased |
+| Scenario                        | Suggested Frequency | Filtering Mode |
+| ------------------------------- | ------------------- | -------------- |
+| Real-time fleet dashboard       | 5–15 seconds        | TimeBased      |
+| Delivery ETA tracking           | 30–60 seconds       | AccuracyBased  |
+| Asset monitoring (low movement) | 1–5 minutes         | DistanceBased  |
+| Periodic check-in               | 15–60 minutes       | DistanceBased  |
 
 ## Step 3: Query Device Positions
 
@@ -87,10 +92,12 @@ For IoT devices, position updates can be sent via MQTT through AWS IoT Core, avo
 ```javascript
 import { GetDevicePositionCommand } from "@aws-sdk/client-location";
 
-const response = await client.send(new GetDevicePositionCommand({
-  TrackerName: "my-fleet-tracker",
-  DeviceId: "truck-01",
-}));
+const response = await client.send(
+  new GetDevicePositionCommand({
+    TrackerName: "my-fleet-tracker",
+    DeviceId: "truck-01",
+  }),
+);
 // response.Position → [-122.3394, 47.6159]
 // response.SampleTime → "2024-01-15T12:00:00Z"
 // response.Accuracy → { Horizontal: 10.0 }
@@ -102,10 +109,12 @@ const response = await client.send(new GetDevicePositionCommand({
 ```javascript
 import { BatchGetDevicePositionCommand } from "@aws-sdk/client-location";
 
-const response = await client.send(new BatchGetDevicePositionCommand({
-  TrackerName: "my-fleet-tracker",
-  DeviceIds: ["truck-01", "truck-02", "truck-03"],
-}));
+const response = await client.send(
+  new BatchGetDevicePositionCommand({
+    TrackerName: "my-fleet-tracker",
+    DeviceIds: ["truck-01", "truck-02", "truck-03"],
+  }),
+);
 // response.DevicePositions → array of position objects
 // response.Errors → array of devices that failed (check this!)
 ```
@@ -115,10 +124,12 @@ const response = await client.send(new BatchGetDevicePositionCommand({
 ```javascript
 import { ListDevicePositionsCommand } from "@aws-sdk/client-location";
 
-const response = await client.send(new ListDevicePositionsCommand({
-  TrackerName: "my-fleet-tracker",
-  MaxResults: 100,
-}));
+const response = await client.send(
+  new ListDevicePositionsCommand({
+    TrackerName: "my-fleet-tracker",
+    MaxResults: 100,
+  }),
+);
 // response.Entries → array of { DeviceId, Position, SampleTime, ... }
 // response.NextToken → use for pagination if more devices exist
 ```
@@ -130,13 +141,15 @@ Retrieve historical positions for a device within a time range. Useful for route
 ```javascript
 import { GetDevicePositionHistoryCommand } from "@aws-sdk/client-location";
 
-const response = await client.send(new GetDevicePositionHistoryCommand({
-  TrackerName: "my-fleet-tracker",
-  DeviceId: "truck-01",
-  StartTimeInclusive: new Date("2024-01-15T00:00:00Z"),
-  EndTimeExclusive: new Date("2024-01-15T23:59:59Z"),
-  MaxResults: 100,
-}));
+const response = await client.send(
+  new GetDevicePositionHistoryCommand({
+    TrackerName: "my-fleet-tracker",
+    DeviceId: "truck-01",
+    StartTimeInclusive: new Date("2024-01-15T00:00:00Z"),
+    EndTimeExclusive: new Date("2024-01-15T23:59:59Z"),
+    MaxResults: 100,
+  }),
+);
 // response.DevicePositions → array of historical positions, ordered by SampleTime
 // response.NextToken → use for pagination
 ```
@@ -150,17 +163,21 @@ Combine tracking data with MapLibre to show devices on an interactive map. See t
 ```javascript
 // After map loads, add device markers
 map.on("load", async () => {
-  const response = await client.send(new ListDevicePositionsCommand({
-    TrackerName: "my-fleet-tracker",
-  }));
+  const response = await client.send(
+    new ListDevicePositionsCommand({
+      TrackerName: "my-fleet-tracker",
+    }),
+  );
 
-  response.Entries.forEach(device => {
+  response.Entries.forEach((device) => {
     new maplibregl.Marker({ color: "#FF0000" })
       .setLngLat(device.Position)
-      .setPopup(new maplibregl.Popup().setHTML(
-        `<h4>${device.DeviceId}</h4>
-         <p>Last seen: ${new Date(device.SampleTime).toLocaleString()}</p>`
-      ))
+      .setPopup(
+        new maplibregl.Popup().setHTML(
+          `<h4>${device.DeviceId}</h4>
+         <p>Last seen: ${new Date(device.SampleTime).toLocaleString()}</p>`,
+        ),
+      )
       .addTo(map);
   });
 });
@@ -172,9 +189,11 @@ For live tracking, poll for position updates on an interval:
 
 ```javascript
 setInterval(async () => {
-  const response = await client.send(new ListDevicePositionsCommand({
-    TrackerName: "my-fleet-tracker",
-  }));
+  const response = await client.send(
+    new ListDevicePositionsCommand({
+      TrackerName: "my-fleet-tracker",
+    }),
+  );
   // Update marker positions on the map
   updateMarkers(response.Entries);
 }, 15000); // every 15 seconds
@@ -187,14 +206,16 @@ setInterval(async () => {
 Display a device's historical route as a line on the map:
 
 ```javascript
-const history = await client.send(new GetDevicePositionHistoryCommand({
-  TrackerName: "my-fleet-tracker",
-  DeviceId: "truck-01",
-  StartTimeInclusive: new Date("2024-01-15T08:00:00Z"),
-  EndTimeExclusive: new Date("2024-01-15T17:00:00Z"),
-}));
+const history = await client.send(
+  new GetDevicePositionHistoryCommand({
+    TrackerName: "my-fleet-tracker",
+    DeviceId: "truck-01",
+    StartTimeInclusive: new Date("2024-01-15T08:00:00Z"),
+    EndTimeExclusive: new Date("2024-01-15T17:00:00Z"),
+  }),
+);
 
-const coordinates = history.DevicePositions.map(p => p.Position);
+const coordinates = history.DevicePositions.map((p) => p.Position);
 
 map.addSource("route", {
   type: "geojson",
@@ -222,22 +243,27 @@ Use `VerifyDevicePosition` to detect GPS spoofing or proxy usage by comparing th
 ```javascript
 import { VerifyDevicePositionCommand } from "@aws-sdk/client-location";
 
-const response = await client.send(new VerifyDevicePositionCommand({
-  TrackerName: "my-fleet-tracker",
-  DeviceState: {
-    Position: [-122.3394, 47.6159],
-    Accuracy: { Horizontal: 10.0 },
-    Ipv4Address: "203.0.113.25",
-    WiFiAccessPoints: [
-      { MacAddress: "AA:BB:CC:DD:EE:FF", Rss: -65 },
-    ],
-    CellSignals: {
-      LteCellDetails: [
-        { CellId: 1234567, Mcc: 310, Mnc: 410, LocalId: { Earfcn: 5230, Pci: 123 } },
-      ],
+const response = await client.send(
+  new VerifyDevicePositionCommand({
+    TrackerName: "my-fleet-tracker",
+    DeviceState: {
+      Position: [-122.3394, 47.6159],
+      Accuracy: { Horizontal: 10.0 },
+      Ipv4Address: "203.0.113.25",
+      WiFiAccessPoints: [{ MacAddress: "AA:BB:CC:DD:EE:FF", Rss: -65 }],
+      CellSignals: {
+        LteCellDetails: [
+          {
+            CellId: 1234567,
+            Mcc: 310,
+            Mnc: 410,
+            LocalId: { Earfcn: 5230, Pci: 123 },
+          },
+        ],
+      },
     },
-  },
-}));
+  }),
+);
 // response.InferredState.Position → inferred [longitude, latitude]
 // response.InferredState.Accuracy → inferred accuracy
 // response.DistanceUnit → "Kilometers"
@@ -248,22 +274,26 @@ const response = await client.send(new VerifyDevicePositionCommand({
 
 ### Common Errors
 
-| Error | HTTP Status | Cause |
-|-------|-------------|-------|
-| `ResourceNotFoundException` | 404 | Tracker name doesn't exist, or device has never sent an update |
-| `ValidationException` | 400 | Invalid parameters (coordinate order, missing fields) |
-| `ThrottlingException` | 429 | Request rate exceeded — implement exponential backoff |
-| `AccessDeniedException` | 403 | IAM or Cognito permissions missing |
+| Error                       | HTTP Status | Cause                                                          |
+| --------------------------- | ----------- | -------------------------------------------------------------- |
+| `ResourceNotFoundException` | 404         | Tracker name doesn't exist, or device has never sent an update |
+| `ValidationException`       | 400         | Invalid parameters (coordinate order, missing fields)          |
+| `ThrottlingException`       | 429         | Request rate exceeded — implement exponential backoff          |
+| `AccessDeniedException`     | 403         | IAM or Cognito permissions missing                             |
 
 ### Batch Operation Errors
 
 `BatchUpdateDevicePosition` and `BatchGetDevicePosition` return partial success. Always check the `Errors` array:
 
 ```javascript
-const response = await client.send(new BatchUpdateDevicePositionCommand({ /* ... */ }));
+const response = await client.send(
+  new BatchUpdateDevicePositionCommand({
+    /* ... */
+  }),
+);
 
 if (response.Errors?.length > 0) {
-  response.Errors.forEach(error => {
+  response.Errors.forEach((error) => {
     console.error(`Failed device ${error.DeviceId}: ${error.Error.Message}`);
   });
 }

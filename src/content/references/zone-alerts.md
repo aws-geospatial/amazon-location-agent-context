@@ -22,11 +22,13 @@ A geofence collection groups zones together. A collection holds up to 50,000 geo
 ```javascript
 import { CreateGeofenceCollectionCommand } from "@aws-sdk/client-location";
 
-const response = await client.send(new CreateGeofenceCollectionCommand({
-  CollectionName: "my-delivery-zones",
-  Description: "Warehouse and customer delivery zones",
-  Tags: { Environment: "Production" },
-}));
+const response = await client.send(
+  new CreateGeofenceCollectionCommand({
+    CollectionName: "my-delivery-zones",
+    Description: "Warehouse and customer delivery zones",
+    Tags: { Environment: "Production" },
+  }),
+);
 // response.CollectionArn → "arn:aws:geo:us-east-1:123456789012:geofence-collection/my-delivery-zones"
 ```
 
@@ -35,6 +37,7 @@ const response = await client.send(new CreateGeofenceCollectionCommand({
 Use `PutGeofence` (single) or `BatchPutGeofence` (bulk) to add geofences to the collection.
 
 Four geometry types:
+
 - **Circle** — center point `[lng, lat]` with `Radius` in meters. Simplest option, use when "within X meters of a point" is sufficient.
 - **Polygon** — outer ring required, optional interior rings for exclusion holes. Use for irregular zone shapes. Maximum 1,000 vertices.
 - **MultiPolygon** — multiple polygons as one geofence. Use when a single logical zone spans disconnected areas.
@@ -43,53 +46,64 @@ Four geometry types:
 Attach `GeofenceProperties` (key-value metadata, max 3 properties, key max 20 chars, value max 40 chars) to zones for downstream filtering in EventBridge rules.
 
 ```javascript
-import { PutGeofenceCommand, BatchPutGeofenceCommand } from "@aws-sdk/client-location";
+import {
+  PutGeofenceCommand,
+  BatchPutGeofenceCommand,
+} from "@aws-sdk/client-location";
 
 // Circle geofence — "within 500m of warehouse"
-await client.send(new PutGeofenceCommand({
-  CollectionName: "my-delivery-zones",
-  GeofenceId: "warehouse-zone-1",
-  GeofenceProperties: { Type: "Warehouse", Priority: "High" },
-  Geometry: {
-    Circle: {
-      Center: [-122.3394, 47.6159],  // [longitude, latitude]
-      Radius: 500,                    // meters
+await client.send(
+  new PutGeofenceCommand({
+    CollectionName: "my-delivery-zones",
+    GeofenceId: "warehouse-zone-1",
+    GeofenceProperties: { Type: "Warehouse", Priority: "High" },
+    Geometry: {
+      Circle: {
+        Center: [-122.3394, 47.6159], // [longitude, latitude]
+        Radius: 500, // meters
+      },
     },
-  },
-}));
+  }),
+);
 
 // Polygon geofence — irregular boundary
-await client.send(new PutGeofenceCommand({
-  CollectionName: "my-delivery-zones",
-  GeofenceId: "restricted-area-1",
-  GeofenceProperties: { Type: "RestrictedArea" },
-  Geometry: {
-    Polygon: [[
-      [-122.34, 47.62],
-      [-122.34, 47.61],
-      [-122.33, 47.61],
-      [-122.33, 47.62],
-      [-122.34, 47.62],  // first and last point MUST match to close the ring
-    ]],
-  },
-}));
+await client.send(
+  new PutGeofenceCommand({
+    CollectionName: "my-delivery-zones",
+    GeofenceId: "restricted-area-1",
+    GeofenceProperties: { Type: "RestrictedArea" },
+    Geometry: {
+      Polygon: [
+        [
+          [-122.34, 47.62],
+          [-122.34, 47.61],
+          [-122.33, 47.61],
+          [-122.33, 47.62],
+          [-122.34, 47.62], // first and last point MUST match to close the ring
+        ],
+      ],
+    },
+  }),
+);
 
 // Bulk add — up to 10 geofences per batch
-await client.send(new BatchPutGeofenceCommand({
-  CollectionName: "my-delivery-zones",
-  Entries: [
-    {
-      GeofenceId: "customer-zone-1",
-      GeofenceProperties: { Type: "CustomerSite" },
-      Geometry: { Circle: { Center: [-122.35, 47.62], Radius: 200 } },
-    },
-    {
-      GeofenceId: "customer-zone-2",
-      GeofenceProperties: { Type: "CustomerSite" },
-      Geometry: { Circle: { Center: [-122.30, 47.60], Radius: 150 } },
-    },
-  ],
-}));
+await client.send(
+  new BatchPutGeofenceCommand({
+    CollectionName: "my-delivery-zones",
+    Entries: [
+      {
+        GeofenceId: "customer-zone-1",
+        GeofenceProperties: { Type: "CustomerSite" },
+        Geometry: { Circle: { Center: [-122.35, 47.62], Radius: 200 } },
+      },
+      {
+        GeofenceId: "customer-zone-2",
+        GeofenceProperties: { Type: "CustomerSite" },
+        Geometry: { Circle: { Center: [-122.3, 47.6], Radius: 150 } },
+      },
+    ],
+  }),
+);
 ```
 
 ## Step 3: Evaluate Device Positions
@@ -108,30 +122,37 @@ import {
 } from "@aws-sdk/client-location";
 
 // 1. Create a tracker
-await client.send(new CreateTrackerCommand({
-  TrackerName: "my-fleet-tracker",
-  PositionFiltering: "AccuracyBased",  // or "DistanceBased" | "TimeBased"
-}));
+await client.send(
+  new CreateTrackerCommand({
+    TrackerName: "my-fleet-tracker",
+    PositionFiltering: "AccuracyBased", // or "DistanceBased" | "TimeBased"
+  }),
+);
 
 // 2. Link tracker to geofence collection (max 5 collections per tracker)
-await client.send(new AssociateTrackerConsumerCommand({
-  TrackerName: "my-fleet-tracker",
-  ConsumerArn: "arn:aws:geo:us-east-1:123456789012:geofence-collection/my-delivery-zones",
-}));
+await client.send(
+  new AssociateTrackerConsumerCommand({
+    TrackerName: "my-fleet-tracker",
+    ConsumerArn:
+      "arn:aws:geo:us-east-1:123456789012:geofence-collection/my-delivery-zones",
+  }),
+);
 
 // 3. Send position updates — automatically evaluated against linked geofences
-await client.send(new BatchUpdateDevicePositionCommand({
-  TrackerName: "my-fleet-tracker",
-  Updates: [
-    {
-      DeviceId: "truck-01",
-      Position: [-122.3394, 47.6159],      // [longitude, latitude]
-      SampleTime: new Date().toISOString(),
-      Accuracy: { Horizontal: 10.0 },
-      PositionProperties: { VehicleType: "Truck" },
-    },
-  ],
-}));
+await client.send(
+  new BatchUpdateDevicePositionCommand({
+    TrackerName: "my-fleet-tracker",
+    Updates: [
+      {
+        DeviceId: "truck-01",
+        Position: [-122.3394, 47.6159], // [longitude, latitude]
+        SampleTime: new Date().toISOString(),
+        Accuracy: { Horizontal: 10.0 },
+        PositionProperties: { VehicleType: "Truck" },
+      },
+    ],
+  }),
+);
 ```
 
 **Note**: Tracker and geofence collection MUST be in the same AWS account — cross-account associations are not supported.
@@ -147,18 +168,20 @@ SHOULD be used when you only need event detection without storing positions, or 
 ```javascript
 import { BatchEvaluateGeofencesCommand } from "@aws-sdk/client-location";
 
-await client.send(new BatchEvaluateGeofencesCommand({
-  CollectionName: "my-delivery-zones",
-  DevicePositionUpdates: [
-    {
-      DeviceId: "truck-01",
-      Position: [-122.3394, 47.6159],      // [longitude, latitude]
-      SampleTime: new Date().toISOString(),
-      Accuracy: { Horizontal: 10.0 },
-      PositionProperties: { VehicleType: "Truck" },
-    },
-  ],
-}));
+await client.send(
+  new BatchEvaluateGeofencesCommand({
+    CollectionName: "my-delivery-zones",
+    DevicePositionUpdates: [
+      {
+        DeviceId: "truck-01",
+        Position: [-122.3394, 47.6159], // [longitude, latitude]
+        SampleTime: new Date().toISOString(),
+        Accuracy: { Horizontal: 10.0 },
+        PositionProperties: { VehicleType: "Truck" },
+      },
+    ],
+  }),
+);
 // Returns HTTP 200 with empty body — events are emitted asynchronously to EventBridge
 ```
 
@@ -177,6 +200,7 @@ Both approaches emit `ENTER` and `EXIT` events to Amazon EventBridge when positi
 Create EventBridge rules to route geofence events to targets like Lambda, SNS (notifications), or SQS (queues).
 
 ### Match all geofence events
+
 ```json
 {
   "source": ["aws.geo"],
@@ -185,6 +209,7 @@ Create EventBridge rules to route geofence events to targets like Lambda, SNS (n
 ```
 
 ### Match only ENTER events with property filter
+
 ```json
 {
   "source": ["aws.geo"],
@@ -198,6 +223,7 @@ Create EventBridge rules to route geofence events to targets like Lambda, SNS (n
 ```
 
 ### Event payload structure
+
 ```json
 {
   "detail-type": "Location Geofence Event",
@@ -222,21 +248,25 @@ Use `ForecastGeofenceEvents` to predict upcoming boundary crossings based on a d
 ```javascript
 import { ForecastGeofenceEventsCommand } from "@aws-sdk/client-location";
 
-const response = await client.send(new ForecastGeofenceEventsCommand({
-  CollectionName: "my-delivery-zones",
-  DeviceState: {
-    Position: [-122.3394, 47.6159],
-    Speed: 50,
-  },
-  TimeHorizonMinutes: 30,
-  SpeedUnit: "KilometersPerHour",
-  DistanceUnit: "Kilometers",
-}));
+const response = await client.send(
+  new ForecastGeofenceEventsCommand({
+    CollectionName: "my-delivery-zones",
+    DeviceState: {
+      Position: [-122.3394, 47.6159],
+      Speed: 50,
+    },
+    TimeHorizonMinutes: 30,
+    SpeedUnit: "KilometersPerHour",
+    DistanceUnit: "Kilometers",
+  }),
+);
 
-response.ForecastedEvents.forEach(event => {
-  console.log(`${event.EventType} ${event.GeofenceId} — ` +
-    `breach in ${event.ForecastedBreachTime}, ` +
-    `distance: ${event.NearestDistance} ${response.DistanceUnit}`);
+response.ForecastedEvents.forEach((event) => {
+  console.log(
+    `${event.EventType} ${event.GeofenceId} — ` +
+      `breach in ${event.ForecastedBreachTime}, ` +
+      `distance: ${event.NearestDistance} ${response.DistanceUnit}`,
+  );
 });
 // EventType: "ENTER" | "EXIT" | "IDLE"
 // IDLE means device is inside the geofence and will remain inside through the time horizon
@@ -248,25 +278,31 @@ response.ForecastedEvents.forEach(event => {
 
 ### Common Errors
 
-| Error | HTTP Status | Cause |
-|-------|-------------|-------|
-| `ResourceNotFoundException` | 404 | Collection or tracker name doesn't exist |
-| `ValidationException` | 400 | Invalid geometry, coordinate order wrong, or parameter constraints violated |
-| `ConflictException` | 409 | Collection name already exists, or tracker already linked to this collection |
-| `ThrottlingException` | 429 | Request rate exceeded — implement exponential backoff |
-| `AccessDeniedException` | 403 | IAM or Cognito permissions missing for the operation |
-| `ServiceQuotaExceededException` | 402 | Account limit reached (e.g., max geofence collections) |
+| Error                           | HTTP Status | Cause                                                                        |
+| ------------------------------- | ----------- | ---------------------------------------------------------------------------- |
+| `ResourceNotFoundException`     | 404         | Collection or tracker name doesn't exist                                     |
+| `ValidationException`           | 400         | Invalid geometry, coordinate order wrong, or parameter constraints violated  |
+| `ConflictException`             | 409         | Collection name already exists, or tracker already linked to this collection |
+| `ThrottlingException`           | 429         | Request rate exceeded — implement exponential backoff                        |
+| `AccessDeniedException`         | 403         | IAM or Cognito permissions missing for the operation                         |
+| `ServiceQuotaExceededException` | 402         | Account limit reached (e.g., max geofence collections)                       |
 
 ### Batch Operation Errors
 
 `BatchPutGeofence` and `BatchEvaluateGeofences` return partial success — some entries MAY succeed while others fail. Always check the `Errors` array in the response:
 
 ```javascript
-const response = await client.send(new BatchPutGeofenceCommand({ /* ... */ }));
+const response = await client.send(
+  new BatchPutGeofenceCommand({
+    /* ... */
+  }),
+);
 
 if (response.Errors?.length > 0) {
-  response.Errors.forEach(error => {
-    console.error(`Failed geofence ${error.GeofenceId}: ${error.Error.Message}`);
+  response.Errors.forEach((error) => {
+    console.error(
+      `Failed geofence ${error.GeofenceId}: ${error.Error.Message}`,
+    );
   });
 }
 ```
