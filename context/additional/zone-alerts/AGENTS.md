@@ -10,6 +10,7 @@ The workflow is: **define zones → evaluate positions → react to events**.
 - [Step 2: Define Zones](#step-2-define-zones)
 - [Step 3: Evaluate Device Positions](#step-3-evaluate-device-positions)
 - [Step 4: React to Events via EventBridge](#step-4-react-to-events-via-eventbridge)
+- [Forecast Geofence Events](#forecast-geofence-events)
 - [Error Handling](#error-handling)
 - [Cost Considerations](#cost-considerations)
 - [Best Practices](#best-practices)
@@ -33,10 +34,11 @@ const response = await client.send(new CreateGeofenceCollectionCommand({
 
 Use `PutGeofence` (single) or `BatchPutGeofence` (bulk) to add geofences to the collection.
 
-Three geometry types:
+Four geometry types:
 - **Circle** — center point `[lng, lat]` with `Radius` in meters. Simplest option, use when "within X meters of a point" is sufficient.
 - **Polygon** — outer ring required, optional interior rings for exclusion holes. Use for irregular zone shapes. Maximum 1,000 vertices.
 - **MultiPolygon** — multiple polygons as one geofence. Use when a single logical zone spans disconnected areas.
+- **Geobuf** — base64-encoded binary for GeoJSON Polygon or MultiPolygon. Supports up to 100,000 vertices (vs 1,000 for plain Polygon). Use for complex boundaries like detailed coastlines or city limits.
 
 Attach `GeofenceProperties` (key-value metadata, max 3 properties, key max 20 chars, value max 40 chars) to zones for downstream filtering in EventBridge rules.
 
@@ -212,6 +214,35 @@ Create EventBridge rules to route geofence events to targets like Lambda, SNS (n
   }
 }
 ```
+
+## Forecast Geofence Events
+
+Use `ForecastGeofenceEvents` to predict upcoming boundary crossings based on a device's current position and speed. Returns forecasted ENTER, EXIT, or IDLE events within a time horizon.
+
+```javascript
+import { ForecastGeofenceEventsCommand } from "@aws-sdk/client-location";
+
+const response = await client.send(new ForecastGeofenceEventsCommand({
+  CollectionName: "my-delivery-zones",
+  DeviceState: {
+    Position: [-122.3394, 47.6159],
+    Speed: 50,
+  },
+  TimeHorizonMinutes: 30,
+  SpeedUnit: "KilometersPerHour",
+  DistanceUnit: "Kilometers",
+}));
+
+response.ForecastedEvents.forEach(event => {
+  console.log(`${event.EventType} ${event.GeofenceId} — ` +
+    `breach in ${event.ForecastedBreachTime}, ` +
+    `distance: ${event.NearestDistance} ${response.DistanceUnit}`);
+});
+// EventType: "ENTER" | "EXIT" | "IDLE"
+// IDLE means device is inside the geofence and will remain inside through the time horizon
+```
+
+**Note**: Heading direction is not considered — the API takes a conservative approach and includes events for any heading. Omit `TimeHorizonMinutes` to perform a containment check only (which geofences is the device currently inside?).
 
 ## Error Handling
 

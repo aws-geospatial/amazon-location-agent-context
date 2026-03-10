@@ -243,25 +243,30 @@ function setMapStyle(styleName) {
 
 ## MapLibre Gotchas
 
-### `map.loaded()` vs the `"load"` event
+### `map.loaded()` goes false after `addSource` — causing hangs
 
-These are **not the same thing** and confusing them causes hangs:
+Calling `map.addSource()` or `map.addLayer()` inside a `"load"` callback sets internal dirty flags, making `loaded()` temporarily return `false`. The `"load"` event will **not** re-fire because the map tracks that it already fired once ([`map.ts#L3680`](https://github.com/maplibre/maplibre-gl-js/blob/main/src/ui/map.ts#L3680)).
 
-- **`"load"` event** — fires once when the map **style** is initially loaded. Sources and layers can be added after this.
-- **`map.loaded()`** — returns `true` only when **all tiles, images, and resources** have been fetched. This can remain `false` well after `"load"` fires.
+Any code that runs after an async delay and gates on `map.loaded()` can hang forever:
 
-**Do NOT do this** — it will hang if `"load"` already fired but tiles are still loading:
 ```javascript
-// BUG: map.loaded() is false, but "load" already fired → hangs forever
+// In a "load" callback: add a source
+map.once("load", () => {
+  map.addSource("zones", { type: "geojson", data: geojson });
+  // map.loaded() is now FALSE (dirty flags set by addSource)
+});
+
+// Later, after an async API call:
 if (!map.loaded()) {
+  // BUG: loaded() is false, but "load" already fired and won't re-fire → hangs
   await new Promise((resolve) => map.on("load", resolve));
 }
 ```
 
 **Correct patterns:**
-- To wait for the style before adding sources/layers: `map.on("load", callback)` or `map.once("load", callback)`
-- To check if the style is ready synchronously: `map.isStyleLoaded()`
-- Markers (DOM-based) can be added at any time — they do not need `"load"` to fire
+- Do all source/layer work inside a single `map.on("load", async () => { ... })` callback — async work inside the callback is fine
+- If you need to wait for sources to settle after load, use `map.once("idle", callback)` which re-fires whenever everything is loaded and stable ([`map.ts#L3705`](https://github.com/maplibre/maplibre-gl-js/blob/main/src/ui/map.ts#L3705))
+- Markers (DOM-based) can be added at any time — they do not need `"load"` or `"idle"`
 
 ### Draggable Markers
 

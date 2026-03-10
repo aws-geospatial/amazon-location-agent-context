@@ -219,7 +219,7 @@ map.addLayer({
 
 ## Position Verification
 
-Use `VerifyDevicePosition` to detect GPS spoofing or proxy usage by comparing the reported position against an inferred position from IP address and Wi-Fi signals.
+Use `VerifyDevicePosition` to detect GPS spoofing or proxy usage by comparing the reported position against an inferred position from IP address, Wi-Fi signals, and cell tower data.
 
 ```javascript
 import { VerifyDevicePositionCommand } from "@aws-sdk/client-location";
@@ -233,6 +233,11 @@ const response = await client.send(new VerifyDevicePositionCommand({
     WiFiAccessPoints: [
       { MacAddress: "AA:BB:CC:DD:EE:FF", Rss: -65 },
     ],
+    CellSignals: {
+      LteCellDetails: [
+        { CellId: 1234567, Mcc: 310, Mnc: 410, LocalId: { Earfcn: 5230, Pci: 123 } },
+      ],
+    },
   },
 }));
 // response.InferredState.Position → inferred [longitude, latitude]
