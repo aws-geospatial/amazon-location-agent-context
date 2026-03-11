@@ -245,7 +245,7 @@ Create EventBridge rules to route geofence events to targets like Lambda, SNS (n
 
 ## Forecast Geofence Events
 
-Use `ForecastGeofenceEvents` to predict upcoming boundary crossings based on a device's current position and speed. Returns forecasted ENTER, EXIT, or IDLE events within a time horizon.
+Use `ForecastGeofenceEvents` to predict upcoming boundary crossings based on a device's current position and speed. Returns forecasted ENTER, EXIT, or IDLE events within a time horizon. This API is **synchronous** — forecasted events are returned directly in the response. Use this when you need immediate results. For asynchronous evaluation that publishes events to Amazon EventBridge, use `BatchEvaluateGeofences` (see Option B above).
 
 ```javascript
 import { ForecastGeofenceEventsCommand } from "@aws-sdk/client-location";
