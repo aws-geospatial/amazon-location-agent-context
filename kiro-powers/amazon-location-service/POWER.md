@@ -201,6 +201,31 @@ Resourceless API key actions (recommended):
 
 Do NOT use legacy `geo:` prefixed actions (e.g., `geo:GetMap*`, `geo:CalculateRoute`) — these are for pre-created resources only and will not work with resourceless APIs.
 
+### LocationClient Setup
+
+Geofencing and Tracking use `LocationClient` (`@aws-sdk/client-location`). These are **resource-based operations** — you MUST create resources (trackers, geofence collections) before using them.
+
+```javascript
+import { LocationClient } from "@aws-sdk/client-location";
+
+// Server-side: uses IAM credentials from environment/role
+const client = new LocationClient({ region: "us-east-1" });
+```
+
+```javascript
+// Client-side: uses Amazon Cognito
+import { LocationClient } from "@aws-sdk/client-location";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers";
+
+const client = new LocationClient({
+  region: "us-east-1",
+  credentials: fromCognitoIdentityPool({
+    identityPoolId: "us-east-1:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    clientConfig: { region: "us-east-1" },
+  }),
+});
+```
+
 ## MCP Server Integration
 
 Integrates with the [AWS MCP Server](https://docs.aws.amazon.com/aws-mcp/latest/userguide/what-is-aws-mcp-server.html) (Apache-2.0 license) which provides access to AWS documentation, API references, and direct API interactions. See the [Getting Started Guide](https://docs.aws.amazon.com/aws-mcp/latest/userguide/getting-started-aws-mcp-server.html) for setup and credential configuration. To use a non-default region, add `"--metadata", "AWS_REGION=<your-region>"` to your MCP config args.
@@ -224,9 +249,11 @@ Load specific steering files based on the task:
 - Create effective address input forms for users with address type ahead completion improving input speed and accuracy → [steering/address-input.md](steering/address-input.md)
 - Validate addresses input from users before taking actions or persisting to databases → [steering/address-verification.md](steering/address-verification.md)
 - Calculate routes between locations with customizable travel options and display them on maps → [steering/calculate-routes.md](steering/calculate-routes.md)
+- Track device locations in real time and query position history → [steering/device-tracking.md](steering/device-tracking.md)
 - Render dynamic maps with MapLibre → [steering/dynamic-map.md](steering/dynamic-map.md)
 - Search for places or points of interest → [steering/places-search.md](steering/places-search.md)
 - Integrate Amazon Location services into web browser applications → [steering/web-javascript.md](steering/web-javascript.md)
+- Monitor device positions against geographic boundaries and react to zone entry or exit → [steering/zone-alerts.md](steering/zone-alerts.md)
 
 
 ## License
