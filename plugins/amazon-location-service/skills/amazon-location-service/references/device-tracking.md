@@ -2,7 +2,9 @@
 
 > **Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
-Track device locations in real time and query position history. This is the core tracking pattern — applicable to fleet dashboards, delivery tracking UIs, asset monitoring, and any scenario where you need to know where devices are or where they've been.
+Track device locations in real time and query position history. This is the core tracking pattern — applicable to fleet dashboards, delivery tracking UIs, asset monitoring, and any scenario where you need to know where devices are or where they've been. For triggering actions when devices enter or exit geographic zones, trackers can be linked to geofence collections — see the **zone-alerts** reference.
+
+> **Language note**: Code examples below use JavaScript (`@aws-sdk/client-location`). When the user's project uses a different language, translate the API calls to the equivalent AWS SDK — the operation names, parameters, and response shapes are identical across SDKs.
 
 ## Table of Contents
 
@@ -10,10 +12,10 @@ Track device locations in real time and query position history. This is the core
 - [Step 2: Send Position Updates](#step-2-send-position-updates)
 - [Step 3: Query Device Positions](#step-3-query-device-positions)
 - [Step 4: Display on a Map](#step-4-display-on-a-map)
-- [Position Verification](#position-verification)
 - [Error Handling](#error-handling)
 - [Cost Considerations](#cost-considerations)
 - [Best Practices](#best-practices)
+- [Position Integrity](#position-integrity)
 
 ## Step 1: Create a Tracker
 
@@ -76,7 +78,7 @@ await client.send(
 
 ### MQTT Ingestion (IoT Devices)
 
-For IoT devices, position updates can be sent via MQTT through AWS IoT Core, avoiding the need to use the AWS SDK directly on constrained devices. Configure an AWS IoT rule to forward messages to `BatchUpdateDevicePosition`. This is the preferred path for high-volume IoT fleets.
+For IoT devices, position updates can be sent via MQTT through AWS IoT Core, avoiding the need to use the AWS SDK directly on constrained devices. Configure an AWS IoT rule with a [Location action](https://docs.aws.amazon.com/iot/latest/developerguide/location-rule-action.html) to forward messages to `BatchUpdateDevicePosition`. This is the preferred path for high-volume IoT fleets. See the [AWS IoT Core docs](https://docs.aws.amazon.com/location/latest/developerguide/tracking-using-mqtt.html) for rule creation steps and message payload format.
 
 ### Update Frequency Guidance
 
@@ -205,7 +207,7 @@ setInterval(async () => {
 
 ### Historical Path Visualization
 
-Display a device's historical route as a line on the map:
+Display a device's historical route as a line on the map. The [`amazon-location-utilities-datatypes-js`](https://github.com/aws-geospatial/amazon-location-utilities-datatypes-js) library provides `devicePositionsToFeatureCollection()` to convert tracking responses into GeoJSON FeatureCollections of Point features — useful for plotting individual position markers. For drawing a connected route line, extract coordinates directly as shown below.
 
 ```javascript
 const history = await client.send(
@@ -236,40 +238,6 @@ map.addLayer({
     "line-width": 3,
   },
 });
-```
-
-## Position Verification
-
-Use `VerifyDevicePosition` to detect GPS spoofing or proxy usage by comparing the reported position against an inferred position from IP address, Wi-Fi signals, and cell tower data.
-
-```javascript
-import { VerifyDevicePositionCommand } from "@aws-sdk/client-location";
-
-const response = await client.send(
-  new VerifyDevicePositionCommand({
-    TrackerName: "my-fleet-tracker",
-    DeviceState: {
-      Position: [-122.3394, 47.6159],
-      Accuracy: { Horizontal: 10.0 },
-      Ipv4Address: "203.0.113.25",
-      WiFiAccessPoints: [{ MacAddress: "AA:BB:CC:DD:EE:FF", Rss: -65 }],
-      CellSignals: {
-        LteCellDetails: [
-          {
-            CellId: 1234567,
-            Mcc: 310,
-            Mnc: 410,
-            LocalId: { Earfcn: 5230, Pci: 123 },
-          },
-        ],
-      },
-    },
-  }),
-);
-// response.InferredState.Position → inferred [longitude, latitude]
-// response.InferredState.Accuracy → inferred accuracy
-// response.DistanceUnit → "Kilometers"
-// Compare reported vs inferred position to detect spoofing
 ```
 
 ## Error Handling
@@ -322,3 +290,33 @@ if (response.Errors?.length > 0) {
 - For fleet dashboards, poll `ListDevicePositions` at a slower rate than devices report (e.g., poll every 15s even if devices report every 5s)
 - Link trackers to geofence collections to automatically trigger zone-based alerts — see the **zone-alerts** reference
 - Use `BatchDeleteDevicePositionHistory` to clean up test data or comply with data retention policies
+
+## Position Integrity
+
+This section covers optional position validation — separate from the core track→query→display flow above. Use `VerifyDevicePosition` to detect GPS spoofing or proxy usage by comparing a device's reported position against an inferred position derived from IP address, Wi-Fi signals, and cell tower data.
+
+```javascript
+import { VerifyDevicePositionCommand } from "@aws-sdk/client-location";
+
+const response = await client.send(
+  new VerifyDevicePositionCommand({
+    TrackerName: "my-fleet-tracker",
+    DeviceState: {
+      Position: [-122.3394, 47.6159],
+      Accuracy: { Horizontal: 10.0 },
+      Ipv4Address: "203.0.113.25",
+      WiFiAccessPoints: [{ MacAddress: "AA:BB:CC:DD:EE:FF", Rss: -65 }],
+      CellSignals: {
+        LteCellDetails: [
+          {
+            CellId: 1234567,
+            Mcc: 310,
+            Mnc: 410,
+            LocalId: { Earfcn: 5230, Pci: 123 },
+          },
+        ],
+      },
+    },
+  }),
+);
+```

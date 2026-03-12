@@ -9,6 +9,8 @@ Detect when devices enter or exit geographic zones and trigger automated actions
 
 The workflow is: **define zones → evaluate positions → react to events**.
 
+> **Language note**: Code examples below use JavaScript (`@aws-sdk/client-location`). When the user's project uses a different language, translate the API calls to the equivalent AWS SDK — the operation names, parameters, and response shapes are identical across SDKs.
+
 ## Table of Contents
 
 - [Step 1: Create a Geofence Collection](#step-1-create-a-geofence-collection)
