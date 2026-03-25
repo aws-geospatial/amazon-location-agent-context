@@ -38,25 +38,21 @@ Activate by keywords: Mention "location", "maps", "geocoding", "routing", "place
 
 ### For Claude Code and Cursor Users
 
-Install as a Plugin from the [Agent Plugins for AWS](https://github.com/awslabs/agent-plugins) marketplace:
+Install as a Plugin from the respective official marketplace:
 
 **Claude Code:**
 
-#### Add the marketplace
-
-```bash
-/plugin marketplace add awslabs/agent-plugins
-```
+You can install the **amazon-location-service** plugin from the official [Claude Plugins marketplace](https://github.com/anthropics/claude-plugins-official):
 
 #### Install the plugin
 
 ```bash
-/plugin install amazon-location-service@agent-plugins-for-aws
+/plugin install amazon-location-service@claude-plugins-official
 ```
 
 **Cursor:**
 
-You can install the **amazon-location-service** plugin from the [Cursor Marketplace](https://cursor.com/marketplace/aws). For additional information, please refer to the [Cursor plugin documentation](https://docs.cursor.com/plugins). You can also install within the Cursor application:
+You can install the **amazon-location-service** plugin from the official [Cursor Marketplace](https://cursor.com/marketplace/aws). For additional information, please refer to the [Cursor plugin documentation](https://docs.cursor.com/plugins). You can also install within the Cursor application:
 
 1. Open Cursor Settings
 1. Navigate to `Plugins`
