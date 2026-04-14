@@ -850,29 +850,36 @@ The API returns an array of route options (typically one route):
   Routes: [
     {
       Summary: {
-        Distance: 7845, // Total distance in meters
-        Duration: 1023, // Total duration in seconds
-        RouteBBox: [
-          // Bounding box [minLng, minLat, maxLng, maxLat]
-          -97.7723, 30.2672, -97.7431, 30.2672,
-        ],
+        Distance: 7845, // Total route distance in meters
+        Duration: 1023, // Total route duration in seconds
+        RouteBBox: [-97.7723, 30.2672, -97.7431, 30.2672], // [minLng, minLat, maxLng, maxLat]
       },
       Legs: [
-        // Array of route segments
+        // Array of route segments between waypoints
         {
           Geometry: {
-            LineString: [
-              // Array of [lng, lat] coordinates
-              [-97.7431, 30.2672],
-              [-97.7445, 30.2678],
-              // ... more coordinates
-            ],
+            LineString: [[-97.7431, 30.2672], [-97.7445, 30.2678], ...], // Simple format
+            // OR
+            Polyline: "BFoz5xJ67i1B...", // FlexiblePolyline format (requires decoding)
           },
-          Summary: {
-            /* leg-specific summary */
+          VehicleLegDetails: {
+            // Only present when LegAdditionalFeatures: ["Summary"] is requested
+            Summary: {
+              Overview: {
+                Distance: 7845, // Leg distance in meters
+                Duration: 1023, // Leg duration in seconds
+              },
+            },
           },
           TravelSteps: [
-            /* navigation instructions */
+            // Only present when LegAdditionalFeatures: ["TravelStepInstructions"] is requested
+            {
+              Type: "Turn",
+              Instruction: "Turn right onto Pine St",
+              Distance: 150, // Meters to next instruction
+              Duration: 30, // Seconds to next instruction
+              GeometryOffset: 0,
+            },
           ],
         },
       ],
@@ -881,6 +888,12 @@ The API returns an array of route options (typically one route):
 }
 ```
 
+**Accessing distance and duration:**
+
+- **Route total**: `route.Summary.Distance` and `route.Summary.Duration` (always available)
+- **Per leg**: `leg.VehicleLegDetails.Summary.Overview.Distance` and `Duration` (requires `LegAdditionalFeatures: ["Summary"]`)
+- **Per step**: `step.Distance` and `step.Duration` (requires `LegAdditionalFeatures: ["TravelStepInstructions"]`)
+
 ### Understanding Legs
 
 Routes are divided into **legs** - segments between waypoints:
@@ -888,7 +901,7 @@ Routes are divided into **legs** - segments between waypoints:
 - **No waypoints**: 1 leg (origin to destination)
 - **N waypoints**: N+1 legs (origin → waypoint₁ → waypoint₂ → ... → destination)
 
-Each leg contains its own geometry, distance, duration, and travel steps.
+Each leg contains geometry, and optionally distance/duration and travel steps depending on `LegAdditionalFeatures`.
 
 ### Travel Steps (Turn-by-Turn Instructions)
 

@@ -154,12 +154,14 @@ searchNear("tacos", [-97.7431, 30.2747]);
 
 ### Search with Category Filter
 
+**Important:** Amazon Location uses specific Category IDs for filtering. Common examples include `restaurant`, `coffee_shop`, `grocery`, `hotel`, `bank`, `gas_station`, `pharmacy`, and `hospital`. See the complete list in the [Place Categories Documentation](https://docs.aws.amazon.com/location/latest/developerguide/places-filtering.html#place-categories).
+
 ```javascript
 async function searchByCategory(query, categories) {
   const command = new amazonLocationClient.places.SearchTextCommand({
     QueryText: query,
     Filter: {
-      Categories: categories, // Filter by category codes
+      IncludeCategories: categories, // Filter by valid category IDs
     },
     MaxResults: 20,
   });
@@ -168,8 +170,8 @@ async function searchByCategory(query, categories) {
   return response.ResultItems;
 }
 
-// Usage - find only restaurants
-searchByCategory("food near downtown", ["Restaurant"]);
+// Usage - find only restaurants and coffee shops
+searchByCategory("food near downtown", ["restaurant", "coffee_shop"]);
 ```
 
 ### Search with Bounding Box
@@ -209,7 +211,7 @@ async function searchNearby(position, radius, categories = null) {
 
   // Optional: filter by categories
   if (categories) {
-    params.Filter = { Categories: categories };
+    params.Filter = { IncludeCategories: categories };
   }
 
   // Optional: specify radius (default is context-dependent)
@@ -238,7 +240,7 @@ async function searchNearby(position, radius, categories = null) {
 
 // Usage - find restaurants within 5km
 const userLocation = [-97.7431, 30.2747];
-searchNearby(userLocation, 5000, ["Restaurant"]);
+searchNearby(userLocation, 5000, ["restaurant"]);
 ```
 
 ### Find Nearest of Type
@@ -248,7 +250,7 @@ searchNearby(userLocation, 5000, ["Restaurant"]);
 async function findNearest(position, category) {
   const command = new amazonLocationClient.places.SearchNearbyCommand({
     QueryPosition: position,
-    Filter: { Categories: [category] },
+    Filter: { IncludeCategories: [category] },
     MaxResults: 1, // Just the nearest
   });
 
@@ -262,7 +264,7 @@ async function findNearest(position, category) {
 }
 
 // Usage - find nearest gas station
-const nearest = await findNearest([-97.7431, 30.2747], "Gas Station");
+const nearest = await findNearest([-97.7431, 30.2747], "gas_station");
 if (nearest) {
   console.log(`Nearest: ${nearest.Title}, ${nearest.Distance}m away`);
 }

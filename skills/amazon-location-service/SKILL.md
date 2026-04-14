@@ -227,6 +227,9 @@ Load these resources as needed for specific implementation guidance:
 - [Calculate Routes](./references/calculate-routes.md) - Calculate routes between locations with customizable travel options and display them on maps
 - [Device Tracking](./references/device-tracking.md) - Track device locations in real time and query position history
 - [Dynamic Map Rendering](./references/dynamic-map.md) - Render dynamic maps with MapLibre
+- [Google Maps Migration (Android)](./references/google-migration-android.md) - Migrate Android application from Google Maps SDK for Android to Amazon Location Service
+- [Google Maps Migration (iOS)](./references/google-migration-ios.md) - Migrate iOS application from Google Maps SDK for iOS to Amazon Location Service
+- [Google Maps Migration (JavaScript)](./references/google-migration-web.md) - Migrate JavaScript web application from Google Maps API to Amazon Location Service
 - [Places Search](./references/places-search.md) - Search for places or points of interest
 - [Web JavaScript](./references/web-javascript.md) - Integrate Amazon Location services into web browser applications
 - [Zone Alerts](./references/zone-alerts.md) - Monitor device positions against geographic boundaries and react to zone entry or exit
