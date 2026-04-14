@@ -422,10 +422,13 @@ const command = new amazonLocationClient.routes.CalculateRoutesCommand({
   Destination: [-96.797, 32.7767], // Dallas [lng, lat]
   TravelMode: "Car",
   LegGeometryFormat: "Simple", // Returns coordinate arrays for easy rendering
+  LegAdditionalFeatures: ["Summary"], // Required for distance/duration
 });
 
 const response = await routesClient.send(command);
-console.log(response.Routes[0].Legs[0].Distance); // meters
+const distance =
+  response.Routes[0].Legs[0].VehicleLegDetails.Summary.Overview.Distance;
+console.log(distance); // meters
 ```
 
 **Route Geometry Formats:**
@@ -761,7 +764,7 @@ response.ResultItems.forEach((place) => {
 Google Maps and Amazon Location use different category systems:
 
 - **Google Maps**: Generic type strings (e.g., `"restaurant"`, `"cafe"`, `"bank"`)
-- **Amazon Location**: Specific Category IDs (e.g., `"restaurant"`, `"coffee_shop"`, `"bank"`, `"gas_station"`, `"hotel"`, `"grocery"`)
+- **Amazon Location**: Specific Category IDs (e.g., `"restaurant"`, `"coffee_shop"`, `"bank"`, `"fueling_station"`, `"hotel"`, `"grocery"`)
 
 When migrating, verify category names match Amazon Location's supported Category IDs. See [Place Categories Documentation](https://docs.aws.amazon.com/location/latest/developerguide/places-filtering.html#place-categories) for the complete list.
 

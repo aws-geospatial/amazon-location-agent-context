@@ -331,10 +331,12 @@ val response = routesClient.calculateRoutes(CalculateRoutesRequest {
     origin = listOf(-97.7431, 30.2747) // Austin [lng, lat]
     destination = listOf(-96.7970, 32.7767) // Dallas [lng, lat]
     travelMode = aws.sdk.kotlin.services.georoutes.model.RouteTravelMode.Car
+    legAdditionalFeatures = listOf(aws.sdk.kotlin.services.georoutes.model.RouteLegAdditionalFeature.Summary)
 })
 
 response.routes?.firstOrNull()?.let { route ->
-    val distance = route.legs?.firstOrNull()?.distance
+    val leg = route.legs?.firstOrNull()
+    val distance = leg?.vehicleLegDetails?.summary?.overview?.distance
     Log.i(TAG, "Distance: $distance meters")
 }
 ```

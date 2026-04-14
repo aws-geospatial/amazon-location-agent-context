@@ -154,7 +154,7 @@ searchNear("tacos", [-97.7431, 30.2747]);
 
 ### Search with Category Filter
 
-**Important:** Amazon Location uses specific Category IDs for filtering. Common examples include `restaurant`, `coffee_shop`, `grocery`, `hotel`, `bank`, `gas_station`, `pharmacy`, and `hospital`. See the complete list in the [Place Categories Documentation](https://docs.aws.amazon.com/location/latest/developerguide/places-filtering.html#place-categories).
+**Important:** Amazon Location uses specific Category IDs for filtering. Common examples include `restaurant`, `coffee_shop`, `grocery`, `hotel`, `bank`, `fueling_station`, `pharmacy`, and `hospital`. See the complete list in the [Place Categories Documentation](https://docs.aws.amazon.com/location/latest/developerguide/places-filtering.html#place-categories).
 
 ```javascript
 async function searchByCategory(query, categories) {
@@ -263,8 +263,8 @@ async function findNearest(position, category) {
   return response.ResultItems[0];
 }
 
-// Usage - find nearest gas station
-const nearest = await findNearest([-97.7431, 30.2747], "gas_station");
+// Usage - find nearest fueling station
+const nearest = await findNearest([-97.7431, 30.2747], "fueling_station");
 if (nearest) {
   console.log(`Nearest: ${nearest.Title}, ${nearest.Distance}m away`);
 }

@@ -335,14 +335,16 @@ let routesClient = try await AmazonLocationAuth.createRoutesClient()
 let input = CalculateRoutesInput(
     origin: [-97.7431, 30.2747], // Austin [lng, lat]
     destination: [-96.7970, 32.7767], // Dallas [lng, lat]
-    travelMode: .car
+    travelMode: .car,
+    legAdditionalFeatures: [.summary]
 )
 
 let response = try await routesClient.calculateRoutes(input: input)
 
 if let route = response.routes?.first,
-   let leg = route.legs?.first {
-    print("Distance: \(leg.distance ?? 0) meters")
+   let leg = route.legs?.first,
+   let distance = leg.vehicleLegDetails?.summary?.overview?.distance {
+    print("Distance: \(distance) meters")
 }
 ```
 
