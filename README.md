@@ -61,6 +61,16 @@ You can install the **amazon-location-service** plugin from the official [Cursor
 1. Select the scope for the installed plugin
 1. The plugin should appear under Plugins → Installed
 
+### For Codex Users
+
+Our plugin hasn't been added to the official Codex marketplace yet, so you'll need to install it from the [agent-plugins](https://github.com/awslabs/agent-plugins) marketplace:
+
+1. Clone the [agent-plugins](https://github.com/awslabs/agent-plugins) repository locally
+2. Open the repository in Codex so it can discover `.agents/plugins/marketplace.json`
+3. Open the plugins with `/plugins`
+4. Navigate to `Amazon Location Service`
+5. Press Enter and choose `Install plugin`
+
 ### For Other AI Coding Agents
 
 For Claude Code and Cursor users, we recommend the [plugin above](#for-claude-code-and-cursor-users) for the best experience (includes MCP configuration). For all other agents that support the [Agent Skills](https://agentskills.io) standard:
