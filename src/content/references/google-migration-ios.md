@@ -418,16 +418,17 @@ Google Maps SDK includes utility classes for geometry operations. For Amazon Loc
 
 ### Polyline Encoding/Decoding
 
-| Google Maps iOS             | Amazon Location Alternative          | Package                                                                 |
-| --------------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
-| `GMSPath(fromEncodedPath:)` | `Polyline.decodeToLineStringFeature` | [`aws-geospatial/polyline`](https://github.com/aws-geospatial/polyline) |
-| `GMSPath.encodedPath()`     | `Polyline.encodeFromLngLatArray`     | [`aws-geospatial/polyline`](https://github.com/aws-geospatial/polyline) |
+Use the official [`Polyline`](https://github.com/aws-geospatial/polyline) Swift package. Do NOT hand-roll a polyline codec: Amazon Location routing returns **FlexiblePolyline**, not Google's Polyline5, so a hand-rolled `/ 1e5` decoder assumes the wrong precision and produces wrong coordinates. The library handles all three compression algorithms (`FlexiblePolyline`, `Polyline5`, `Polyline6`) and returns GeoJSON that MapLibre can render directly.
 
-**Example - Polyline Decoding (using `aws-geospatial/polyline`):**
+| Google Maps iOS             | Amazon Location Alternative              | Package    |
+| --------------------------- | ---------------------------------------- | ---------- |
+| `GMSPath(fromEncodedPath:)` | `Polyline.decodeToLngLatArray(_:)`       | `Polyline` |
+| `GMSPath.encodedPath()`     | `Polyline.encodeFromLngLatArray(_:)`     | `Polyline` |
+| Rendering a route           | `Polyline.decodeToLineStringFeature(_:)` | `Polyline` |
 
-Amazon Location routing returns **FlexiblePolyline**, not Google's Polyline5. A hand-rolled `/ 1e5` decoder assumes Polyline5 precision and produces wrong coordinates. Use the official [`aws-geospatial/polyline`](https://github.com/aws-geospatial/polyline) library, which decodes FlexiblePolyline directly into MapLibre-ready GeoJSON.
+**Add the package in Xcode:** File → Add Package Dependencies, URL `https://github.com/aws-geospatial/polyline`, then select the `Polyline` product.
 
-Add via Swift Package Manager: `https://github.com/aws-geospatial/polyline/`
+**Example - Polyline Decoding:**
 
 ```swift
 // Google Maps (Before)
@@ -435,13 +436,23 @@ import GoogleMaps
 
 let path = GMSPath(fromEncodedPath: encodedPolyline)
 
-// Amazon Location (After) - official library
+// Amazon Location (After)
 import Polyline
 
-// Decode the FlexiblePolyline returned by Amazon Location routing
-let feature = Polyline.decodeToLineStringFeature(encodedPolyline)
-// `feature` is a GeoJSON LineString Feature, ready to add to a MapLibre source
+// Most common: decode straight to a GeoJSON Feature for MapLibre.
+// These throw, so call them with `try`.
+let feature = try Polyline.decodeToLineStringFeature(encodedPolyline)
+
+// Or get raw coordinate pairs (longitude, latitude order)
+let lngLatArray = try Polyline.decodeToLngLatArray(encodedPolyline)
+let coordinates = lngLatArray.map {
+    CLLocationCoordinate2D(latitude: $0[1], longitude: $0[0])
+}
 ```
+
+**Note on coordinate order:** the library uses **longitude, latitude** order, whereas Google's `GMSPath` yields `CLLocationCoordinate2D`. Map the components explicitly, as shown above, when porting existing code.
+
+**Note on compression algorithm:** `CalculateRoutes` responses use `FlexiblePolyline` when you set `LegGeometryFormat: "FlexiblePolyline"`. Select it with `Polyline.setCompressionAlgorithm(.FlexiblePolyline)`. Google's encoded paths are `Polyline5`.
 
 ### Geometry Operations
 

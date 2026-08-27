@@ -112,9 +112,19 @@ allprojects {
 
 Amazon Location Service supports API Key and Cognito authentication.
 
-### API Key Authentication (Recommended for Maps, Places, Routes)
+You SHOULD use the [Amazon Location Mobile Auth SDK for Android](https://github.com/aws-geospatial/amazon-location-mobile-auth-sdk-android) (`software.amazon.location:auth`) rather than assembling credentials providers by hand. It covers API keys, Cognito identity pools, and custom credentials, and it produces the per-service client configs for you. It also handles SigV4 signing of MapLibre tile requests and, for API keys with Android app restrictions, adds the required `X-Android-Package` and `X-Android-Cert` headers automatically — which is difficult to get right manually.
 
-**Create a credential provider:**
+**Add the dependency to your app-level `build.gradle.kts`:**
+
+```kotlin
+dependencies {
+    implementation("software.amazon.location:auth:1.1.0")
+}
+```
+
+Check [Maven Central](https://central.sonatype.com/artifact/software.amazon.location/auth) for the latest version. MapLibre is already declared in [Setup and Dependencies](#setup-and-dependencies) — do not add a second, different version here.
+
+### API Key Authentication (Recommended for Maps, Places, Routes)
 
 An Amazon Location API key is **not** an IAM access-key pair, so it must not be passed as a SigV4 access key. Use the Amazon Location Auth SDK's `AuthHelper.withApiKey`, which configures the client to send the key correctly (and attaches `X-Android-Package` / `X-Android-Cert` headers for app-restricted keys).
 
@@ -144,14 +154,11 @@ class AmazonLocationAuth {
 }
 ```
 
-Add the Auth SDK dependency: `implementation("software.amazon.location:auth:<version>")`.
-
 **Usage:**
 
 ```kotlin
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import software.amazon.location.auth.AuthHelper
+import aws.sdk.kotlin.services.geoplaces.GeoPlacesClient
 
 class MyActivity : AppCompatActivity() {
     private val scope = CoroutineScope(Dispatchers.Main)
@@ -167,37 +174,23 @@ class MyActivity : AppCompatActivity() {
 }
 ```
 
+The helper exposes a config per service: `getGeoPlacesClientConfig()`, `getGeoRoutesClientConfig()`, `getGeoMapsClientConfig()`, and `getLocationClientConfig()` for the consolidated client (Geofencing and Tracking).
+
 ### Cognito Authentication (Required for Geofencing, Tracking)
 
 ```kotlin
-import aws.sdk.kotlin.services.cognitoidentity.CognitoIdentityClient
-import aws.sdk.kotlin.services.cognitoidentity.model.GetCredentialsForIdentityRequest
-import aws.sdk.kotlin.services.cognitoidentity.model.GetIdRequest
+import software.amazon.location.auth.AuthHelper
+import aws.sdk.kotlin.services.location.LocationClient
 
-suspend fun getCognitoCredentials(identityPoolId: String): Credentials {
-    val cognitoClient = CognitoIdentityClient {
-        region = "us-west-2"
-    }
+val authHelper = AuthHelper.withCognitoIdentityPool(
+    identityPoolId = "YOUR_IDENTITY_POOL_ID",
+    context = applicationContext
+)
 
-    // Get identity ID
-    val getIdResponse = cognitoClient.getId(GetIdRequest {
-        this.identityPoolId = identityPoolId
-    })
-
-    // Get temporary credentials
-    val credentialsResponse = cognitoClient.getCredentialsForIdentity(
-        GetCredentialsForIdentityRequest {
-            identityId = getIdResponse.identityId
-        }
-    )
-
-    return Credentials.invoke(
-        accessKeyId = credentialsResponse.credentials?.accessKeyId ?: "",
-        secretAccessKey = credentialsResponse.credentials?.secretKey ?: "",
-        sessionToken = credentialsResponse.credentials?.sessionToken
-    )
-}
+val locationClient = LocationClient(authHelper.getLocationClientConfig())
 ```
+
+The SDK refreshes the Cognito credentials for you — do NOT call `CognitoIdentityClient.getId()` and `getCredentialsForIdentity()` directly to build a `StaticCredentialsProvider`, since that skips refresh handling and has to be re-implemented per service.
 
 ## API Mappings Reference
 
@@ -411,16 +404,25 @@ Google Maps SDK includes utility classes for geometry operations. For Amazon Loc
 
 ### Polyline Encoding/Decoding
 
-| Google Maps Android | Amazon Location Alternative          | Package                                                                 |
-| ------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
-| `PolyUtil.encode()` | `Polyline.encodeFromLngLatArray`     | [`aws-geospatial/polyline`](https://github.com/aws-geospatial/polyline) |
-| `PolyUtil.decode()` | `Polyline.decodeToLineStringFeature` | [`aws-geospatial/polyline`](https://github.com/aws-geospatial/polyline) |
+Use the official [`software.amazon.location:polyline`](https://github.com/aws-geospatial/polyline) library. Do NOT hand-roll a polyline codec: Amazon Location routing returns **FlexiblePolyline**, not Google's Polyline5, so a hand-rolled `/ 1e5` decoder assumes the wrong precision and produces wrong coordinates. The library handles all three compression algorithms (`FlexiblePolyline`, `Polyline5`, `Polyline6`) and returns GeoJSON that MapLibre can render directly.
 
-**Example - Polyline Decoding (using `aws-geospatial/polyline`):**
+| Google Maps Android | Amazon Location Alternative            | Package                             |
+| ------------------- | -------------------------------------- | ----------------------------------- |
+| `PolyUtil.encode()` | `Polyline.encodeFromLngLatArray()`     | `software.amazon.location:polyline` |
+| `PolyUtil.decode()` | `Polyline.decodeToLngLatArray()`       | `software.amazon.location:polyline` |
+| Rendering a route   | `Polyline.decodeToLineStringFeature()` | `software.amazon.location:polyline` |
 
-Amazon Location routing returns **FlexiblePolyline**, not Google's Polyline5. A hand-rolled `/ 1e5` decoder assumes Polyline5 precision and produces wrong coordinates. Use the official [`aws-geospatial/polyline`](https://github.com/aws-geospatial/polyline) library, which decodes FlexiblePolyline directly into MapLibre-ready GeoJSON.
+**Add the dependency to your app-level `build.gradle.kts`:**
 
-Add the dependency: `implementation("software.amazon.location:polyline:0.1.0")`.
+```kotlin
+dependencies {
+    implementation("software.amazon.location:polyline:0.1.0")
+}
+```
+
+Check [Maven Central](https://central.sonatype.com/artifact/software.amazon.location/polyline) for the latest version.
+
+**Example - Polyline Decoding:**
 
 ```kotlin
 // Google Maps (Before)
@@ -428,13 +430,32 @@ import com.google.maps.android.PolyUtil
 
 val points = PolyUtil.decode(encodedPolyline)
 
-// Amazon Location (After) - official library
+// Amazon Location (After)
 import software.amazon.location.polyline.Polyline
 
-// Decode the FlexiblePolyline returned by Amazon Location routing
-val feature = Polyline.decodeToLineStringFeature(encodedPolyline)
-// `feature` is a GeoJSON LineString Feature, ready to add to a MapLibre source
+// Most common: decode straight to a GeoJSON Feature for MapLibre
+when (val result = Polyline.decodeToLineStringFeature(encodedPolyline)) {
+    is Polyline.DecodeToGeoJsonResult.Success -> {
+        val source = GeoJsonSource("route-source", result.geojson)
+        style.addSource(source)
+    }
+    is Polyline.DecodeToGeoJsonResult.Error -> {
+        Log.e("Polyline", "Decode failed: $result")
+    }
+}
+
+// Or get raw coordinate pairs (longitude, latitude order)
+when (val result = Polyline.decodeToLngLatArray(encodedPolyline)) {
+    is Polyline.DecodeToArrayResult.Success -> {
+        val coordinates = result.lngLatArray
+    }
+    is Polyline.DecodeToArrayResult.Error -> { /* handle */ }
+}
 ```
+
+**Note on coordinate order:** the library uses **longitude, latitude** order, whereas Google's `PolyUtil.decode()` returns `LatLng`. Swap the components when porting existing code.
+
+**Note on compression algorithm:** `CalculateRoutes` responses use `FlexiblePolyline` when you set `LegGeometryFormat: "FlexiblePolyline"`. Select it with `Polyline.setCompressionAlgorithm(Polyline.CompressionAlgorithm.FlexiblePolyline)`. Google's encoded paths are `Polyline5`.
 
 ### Geometry Operations
 

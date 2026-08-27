@@ -235,6 +235,56 @@ function submitForm() {
 }
 ```
 
+### Search Box on a MapLibre Map
+
+If the address input is a **search box on a MapLibre map** rather than a form field, you SHOULD use [`@aws/amazon-location-for-maplibre-gl-geocoder`](https://github.com/aws-geospatial/amazon-location-for-maplibre-gl-geocoder) instead of hand-building the suggestion list above. It provides the search-box UI, the suggestion dropdown, and result markers as a MapLibre control, wired to Autocomplete, Geocode, reverse geocode, and search-by-place-id.
+
+**Installation:**
+
+```bash
+npm install @aws/amazon-location-for-maplibre-gl-geocoder
+```
+
+Include the stylesheet, or the control renders unstyled:
+
+```html
+<link
+  href="https://cdn.jsdelivr.net/npm/@aws/amazon-location-for-maplibre-gl-geocoder@2/dist/amazon-location-for-mlg-styles.css"
+  rel="stylesheet"
+/>
+```
+
+**Usage:**
+
+```javascript
+import maplibregl from "maplibre-gl";
+import { buildAmazonLocationMaplibreGeocoder } from "@aws/amazon-location-for-maplibre-gl-geocoder";
+
+// Same client construction as the form-field example above
+const authHelper = amazonLocationClient.withAPIKey(API_KEY, REGION);
+const client = new amazonLocationClient.GeoPlacesClient(
+  authHelper.getClientConfig(),
+);
+
+const map = new maplibregl.Map({
+  container: "map",
+  center: [-123.115898, 49.295868],
+  zoom: 10,
+  style: `https://maps.geo.${REGION}.amazonaws.com/v2/styles/Standard/descriptor?key=${API_KEY}`,
+});
+
+const geocoder = buildAmazonLocationMaplibreGeocoder(client, {
+  enableAll: true,
+});
+map.addControl(geocoder.getPlacesGeocoder());
+```
+
+`enableAll: true` turns on suggestions, search-by-place-id, and reverse geocoding together. Individual flags (`enableGetSuggestions`, `enableSearchByPlaceId`, `omitSuggestionsWithoutPlaceId`, `reverseGeocode`) are available when you need a narrower control.
+
+**Use `GeoPlacesClient` from `@aws-sdk/client-geo-places`**, as shown. The library also accepts a `LocationClient` with a `placesIndex`, but that is the deprecated V1 place-index path and MUST NOT be used for new applications.
+
+Keep the form-field flow above for address inputs that are not on a map — the geocoder is a MapLibre control and requires a map instance.
+
 ## Error Handling
 
 ### Autocomplete Errors
