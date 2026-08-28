@@ -3,7 +3,7 @@
 
 ADDRESS_INPUT_HEADER_NAME="Address Input"
 
-ADDRESS_INPUT_HEADER_KEYWORDS="address form, address input, autocomplete, type-ahead, GetPlace, address entry, geocode typed address"
+ADDRESS_INPUT_HEADER_KEYWORDS="address form, address input, autocomplete, type-ahead, GetPlace, address entry, geocode typed address, search box, geocoder, maplibre geocoder"
 
 ADDRESS_INPUT_HEADER_WHEN="Create effective address input forms for users with address type ahead completion improving input speed and accuracy"
 
