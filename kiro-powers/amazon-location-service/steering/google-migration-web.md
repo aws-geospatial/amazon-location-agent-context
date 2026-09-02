@@ -3,6 +3,7 @@ name: Google Maps Migration (JavaScript)
 tags: google maps, migration, migrate, switch from google, google.maps, @googlemaps, googlemaps, gmaps, google maps api, google places, google directions, PlacesService, DirectionsService, Geocoder, importLibrary
 description: Migrate JavaScript web application from Google Maps API to Amazon Location Service
 ---
+
 > **Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
 Migrate JavaScript web applications from Google Maps API to Amazon Location Service with minimal code changes using the Migration SDK, or transition to native Amazon Location APIs for full feature access.
@@ -488,7 +489,9 @@ const path = [
   new google.maps.LatLng(32.7767, -96.797),
 ];
 const encoded = encoding.encodePath(path);
+```
 
+```javascript
 // Phase 2 - Native Amazon Location with @aws/polyline
 import { encodeFromLngLatArray } from "@aws/polyline";
 
@@ -507,15 +510,15 @@ npm install @aws/polyline
 
 ### Polygon and Geometry Operations
 
-| Google Maps API                                                         | Amazon Location Alternative                                | Package      |
-| ----------------------------------------------------------------------- | ---------------------------------------------------------- | ------------ |
-| `google.maps.geometry.poly.containsLocation(point, polygon)`            | `turf.booleanPointInPolygon(point, polygon)`               | `@turf/turf` |
-| `google.maps.geometry.poly.isLocationOnEdge(point, poly, tolerance)`    | `turf.pointToLineDistance()` + `turf.booleanPointOnLine()` | `@turf/turf` |
-| `google.maps.geometry.spherical.computeDistanceBetween(from, to)`       | `turf.distance(from, to)`                                  | `@turf/turf` |
-| `google.maps.geometry.spherical.computeHeading(from, to)`               | `turf.bearing(from, to)`                                   | `@turf/turf` |
-| `google.maps.geometry.spherical.computeOffset(from, distance, heading)` | `turf.destination(from, distance, bearing)`                | `@turf/turf` |
-| `google.maps.geometry.spherical.computeArea(path)`                      | `turf.area(polygon)`                                       | `@turf/turf` |
-| `google.maps.geometry.spherical.interpolate(from, to, fraction)`        | `turf.along(line, distance)`                               | `@turf/turf` |
+| Google Maps API                                                         | Amazon Location Alternative                                                                | Package      |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------ |
+| `google.maps.geometry.poly.containsLocation(point, polygon)`            | `turf.booleanPointInPolygon(point, polygon)`                                               | `@turf/turf` |
+| `google.maps.geometry.poly.isLocationOnEdge(point, poly, tolerance)`    | `turf.pointToLineDistance()` + `turf.booleanPointOnLine()`                                 | `@turf/turf` |
+| `google.maps.geometry.spherical.computeDistanceBetween(from, to)`       | `turf.distance(from, to, { units: "meters" })`                                             | `@turf/turf` |
+| `google.maps.geometry.spherical.computeHeading(from, to)`               | `turf.bearing(from, to)`                                                                   | `@turf/turf` |
+| `google.maps.geometry.spherical.computeOffset(from, distance, heading)` | `turf.destination(from, distance, bearing, { units: "meters" })`                           | `@turf/turf` |
+| `google.maps.geometry.spherical.computeArea(path)`                      | `turf.area(polygon)`                                                                       | `@turf/turf` |
+| `google.maps.geometry.spherical.interpolate(from, to, fraction)`        | `turf.along(line, turf.length(line, { units: "meters" }) * fraction, { units: "meters" })` | `@turf/turf` |
 
 **Example - Point in Polygon:**
 
@@ -539,7 +542,9 @@ const polygonPath = [
 ];
 const polygon = new google.maps.Polygon({ paths: polygonPath });
 const contains = poly.containsLocation(point, polygon);
+```
 
+```javascript
 // Phase 2 - Native Amazon Location with Turf.js
 import * as turf from "@turf/turf";
 
@@ -566,7 +571,9 @@ const { spherical } = await google.maps.importLibrary("geometry");
 const from = new google.maps.LatLng(30.2747, -97.7431);
 const to = new google.maps.LatLng(32.7767, -96.797);
 const distanceMeters = spherical.computeDistanceBetween(from, to);
+```
 
+```javascript
 // Amazon Location (Phase 2 - Native with Turf.js)
 import * as turf from "@turf/turf";
 
