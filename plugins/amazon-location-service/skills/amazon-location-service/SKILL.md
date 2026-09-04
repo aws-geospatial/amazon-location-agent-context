@@ -79,7 +79,7 @@ Use these default choices unless the user explicitly requests otherwise:
 
 - **JavaScript SDK**: Bundled client (CDN) for browser-only apps; npm modular SDKs (@aws-sdk/client-geo-*) for React and build tool apps
 - **API operations**: Resourceless for Maps/Places/Routes (Geofencing/Tracking always require pre-created resources)
-- **Authentication**: API Key for Maps/Places/Routes; Cognito for Geofencing/Tracking
+- **Authentication**: API Key for Maps/Places/Routes; Cognito (client-side) or SigV4/IAM (server-side) for Geofencing/Tracking; SigV4/IAM role for the Jobs API / Address Validation (StartJob/GetJob/ListJobs/CancelJob). API keys authenticate ONLY Maps/Places/Routes — they do NOT work for Geofencing, Tracking, or Jobs operations.
 - **Map style**: Standard
 - **Coordinate format**: [longitude, latitude] (GeoJSON order)
 
@@ -178,6 +178,10 @@ When discussing permissions for Amazon Location Places, Maps and Routes services
 - Useful for web and mobile applications
 - Supports both resource-based and resourceless operations
 - Enables faster subsequent map loads through CDN caching
+
+**Jobs API / Address Validation, Geofencing, and Tracking** - These operations are NOT API-key-eligible. API keys authenticate only Maps, Places, and Routes.
+- **Jobs API / Address Validation** (`StartJob` with Action `ValidateAddress`, `GetJob`, `ListJobs`, `CancelJob`): server-side/back-office operations that MUST be called with SigV4 request signing backed by an IAM role or IAM user credentials — never an API key. `StartJob` also takes an `ExecutionRoleArn` (a separate IAM role that Amazon Location assumes to read/write your S3 buckets); that is in addition to the calling identity SigV4/IAM credentials, not a substitute for them. See the address-verification reference.
+- **Geofencing and Tracking**: SigV4/IAM for server-side callers, or an Amazon Cognito identity pool for client-side (browser/mobile) callers. Not API-key-eligible.
 
 **API Key Action Names** - API keys use their own action naming convention. Do NOT use SDK client names or IAM action names — they will be rejected.
 

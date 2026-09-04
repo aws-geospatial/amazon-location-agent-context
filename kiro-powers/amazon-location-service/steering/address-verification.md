@@ -21,6 +21,7 @@ Verify and standardize addresses in bulk against authoritative postal data using
 ## Table of Contents
 
 - [Overview](#overview)
+- [Authentication](#authentication)
 - [When to Validate Addresses](#when-to-validate-addresses)
 - [Supported Countries](#supported-countries)
 - [Job Workflow](#job-workflow)
@@ -44,6 +45,23 @@ Address validation jobs process address data to verify and standardize addresses
 4. **Enriches (optional)** - Adds geographic coordinates and country-specific postal attributes when requested
 
 Validation runs as an **asynchronous bulk job**: you stage input in Amazon S3 as Apache Parquet, submit a job with `StartJob`, poll `GetJob` (or subscribe via EventBridge) until it completes, then read Parquet results from your S3 output location. This is designed for processing many addresses in a single operation, not for real-time single-address lookups during form entry.
+
+## Authentication
+
+The Jobs API operations (`StartJob`, `GetJob`, `ListJobs`, `CancelJob`) are **server-side/back-office** calls. Authenticate them with **SigV4 request signing backed by an IAM role or IAM user credentials** — resolved from the environment, an instance/task role, or the default AWS credential chain. **API keys do NOT authenticate the Jobs API** (API keys cover only Maps, Places, and Routes); neither do client-side flows — do not call these operations directly from a browser or mobile device.
+
+There are two distinct IAM identities in an address-validation job; do not conflate them:
+
+1. **Caller credentials** — the SigV4/IAM identity that signs the `StartJob`/`GetJob`/`ListJobs`/`CancelJob` request. Needs `geo:StartJob`, `geo:GetJob`, `geo:ListJobs`, `geo:CancelJob` as appropriate.
+2. **`ExecutionRoleArn`** — a separate IAM role that Amazon Location _assumes_ to read your input and write your output S3 buckets. This is passed in the `StartJob` request; it is **in addition to**, not a replacement for, the caller credentials. Its trust policy must allow `geo.amazonaws.com` to `sts:AssumeRole` (see [Starting a Validation Job](#starting-a-validation-job)).
+
+```javascript
+import { LocationClient } from "@aws-sdk/client-location";
+
+// Server-side: SigV4 signing with IAM credentials from the environment/role.
+// No API key — the Jobs API is not API-key-eligible.
+const client = new LocationClient({ region: "us-east-1" });
+```
 
 ## When to Validate Addresses
 
