@@ -1,7 +1,7 @@
 ---
 name: "amazon-location-service"
 displayName: "Build geospatial applications with Amazon Location Service"
-description: "Guide developers through adding maps, places search, geocoding, routing, and other geospatial features with Amazon Location Service, including authentication setup, SDK integration, and best practices"
+description: "Guide developers through adding maps, places search, geocoding, routing, and other geospatial features with Amazon Location Service, including authentication setup, SDK integration, and best practices."
 keywords:
   [
     "location",

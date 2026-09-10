@@ -3,7 +3,6 @@ name: Google Maps Migration (JavaScript)
 tags: google maps, migration, migrate, switch from google, google.maps, @googlemaps, googlemaps, gmaps, google maps api, google places, google directions, PlacesService, DirectionsService, Geocoder, importLibrary
 description: Migrate JavaScript web application from Google Maps API to Amazon Location Service
 ---
-
 > **Audience Note**: Keywords MUST, SHOULD, MAY in this document indicate requirements for agent recommendations to users, following RFC 2119.
 
 Migrate JavaScript web applications from Google Maps API to Amazon Location Service with minimal code changes using the Migration SDK, or transition to native Amazon Location APIs for full feature access.
@@ -499,7 +498,7 @@ const lngLatArray = [
   [-97.7431, 30.2747],
   [-96.797, 32.7767],
 ];
-const encoded = encodeFromLngLatArray(lngLatArray);
+const encodedNative = encodeFromLngLatArray(lngLatArray);
 ```
 
 **Package installation:**
@@ -558,7 +557,7 @@ const turfPolygon = turf.polygon([
     [-98.0, 30.0], // Close the polygon
   ],
 ]);
-const contains = turf.booleanPointInPolygon(turfPoint, turfPolygon);
+const containsNative = turf.booleanPointInPolygon(turfPoint, turfPolygon);
 ```
 
 **Example - Distance Between Points:**
@@ -579,8 +578,9 @@ import * as turf from "@turf/turf";
 
 const fromPoint = turf.point([-97.7431, 30.2747]);
 const toPoint = turf.point([-96.797, 32.7767]);
-const distanceKm = turf.distance(fromPoint, toPoint, { units: "kilometers" });
-const distanceMeters = distanceKm * 1000;
+const distanceMetersNative = turf.distance(fromPoint, toPoint, {
+  units: "meters",
+});
 ```
 
 **Package installation:**
