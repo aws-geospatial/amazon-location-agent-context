@@ -4,7 +4,7 @@ description: Integrates Amazon Location Service APIs for AWS applications. Use t
 license: Apache-2.0
 metadata:
   author: aws-geospatial
-  version: "1.1"
+  version: "1.2"
 ---
 
 ## Overview
