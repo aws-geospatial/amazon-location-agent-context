@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Amazon Location Service plugins for Claude Code",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "name": "amazon-location-plugins",
   "owner": {
@@ -27,7 +27,7 @@
       "name": "amazon-location-service",
       "source": "./plugins/amazon-location-service",
       "tags": ["aws", "location", "maps", "geospatial"],
-      "version": "1.1.0"
+      "version": "1.2.0"
     }
   ]
 }
